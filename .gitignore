@@ -1,0 +1,3 @@
+conf/config.inc.php
+.DS_Store
+!.gitignore

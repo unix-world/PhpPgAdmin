@@ -1,0 +1,8 @@
+
+# make all dates UTC
+php_value date.timezone 		UTC
+
+# memory improvements
+php_value memory_limit 			512M
+php_value post_max_size			108M
+php_value upload_max_filesize	256M
