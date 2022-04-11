@@ -17,7 +17,7 @@
 
 	// Application version
 //	$appVersion = '5.2-dev';
-	$appVersion = 'uxm.20220411';
+	$appVersion = 'uxm.20220411'; // custom app version (separate maintenance)
 
 	// PostgreSQL and PHP minimum version
 	$postgresqlMinVer = '7.4';
