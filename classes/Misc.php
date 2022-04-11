@@ -932,6 +932,14 @@
 							'help'  => 'pg.function',
 							'icon'  => 'Functions',
 						),
+						'aggregates' => array (
+							'title' => $lang['straggregates'],
+							'url'   => 'aggregates.php',
+							'urlvars' => array('subject' => 'schema'),
+						//	'hide'  => $hide_advanced,
+							'help'  => 'pg.aggregate',
+							'icon'  => 'Aggregates',
+						),
 						'fulltext' => array (
 							'title' => $lang['strfulltext'],
 							'url'   => 'fulltext.php',
@@ -946,14 +954,6 @@
 							'urlvars' => array('subject' => 'schema'),
 							'help'  => 'pg.domain',
 							'icon'  => 'Domains',
-						),
-						'aggregates' => array (
-							'title' => $lang['straggregates'],
-							'url'   => 'aggregates.php',
-							'urlvars' => array('subject' => 'schema'),
-							'hide'  => $hide_advanced,
-							'help'  => 'pg.aggregate',
-							'icon'  => 'Aggregates',
 						),
 						'types' => array (
 							'title' => $lang['strtypes'],

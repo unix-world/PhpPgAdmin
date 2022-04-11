@@ -9,6 +9,8 @@ include_once('./classes/database/Postgres94.php');
 
 class Postgres11 extends Postgres94 {
 
+	// replace proisagg with prokind as f for a normal function, p for a procedure, a for an aggregate function, or w for a window function
+
 	var $major_version = 11;
 
 	/**
@@ -61,7 +63,10 @@ class Postgres11 extends Postgres94 {
 				INNER JOIN pg_catalog.pg_language pl ON pl.oid = p.prolang
 				LEFT JOIN pg_catalog.pg_user u ON u.usesysid = p.proowner
 			WHERE
+				-- start fix
 		--		NOT p.proisagg AND
+				(p.prokind = 'f' OR p.prokind = 'p') AND
+				-- end fix
 				{$where}
 			ORDER BY p.proname, proresult
 			";
@@ -84,7 +89,10 @@ class Postgres11 extends Postgres94 {
 				a.agginitval, a.aggsortop, u.usename, pg_catalog.obj_description(p.oid, 'pg_proc') AS aggrcomment
 			FROM pg_catalog.pg_proc p, pg_catalog.pg_namespace n, pg_catalog.pg_user u, pg_catalog.pg_aggregate a
 			WHERE n.oid = p.pronamespace AND p.proowner=u.usesysid AND p.oid=a.aggfnoid
+				-- start fix
 		--		AND p.proisagg
+				AND (p.prokind = 'a' OR p.prokind = 'w')
+				-- end fix
 				AND n.nspname='{$c_schema}'
 				AND p.proname='" . $name . "'
 				AND CASE p.proargtypes[0]
@@ -104,11 +112,54 @@ class Postgres11 extends Postgres94 {
 			   pg_catalog.obj_description(p.oid, 'pg_proc') AS aggrcomment
 			   FROM pg_catalog.pg_proc p, pg_catalog.pg_namespace n, pg_catalog.pg_user u, pg_catalog.pg_aggregate a
 			   WHERE n.oid = p.pronamespace AND p.proowner=u.usesysid AND p.oid=a.aggfnoid
+			   -- start fix
 	--		   AND p.proisagg
+               AND (p.prokind = 'a' OR p.prokind = 'w')
+               -- end fix
 			   AND n.nspname='{$c_schema}' ORDER BY 1, 2";
 
 		return $this->selectSet($sql);
 	}
+
+
+	/**
+	 * Returns the current default_with_oids setting
+	 * @return default_with_oids setting
+	 */
+	function getDefaultWithOid() {
+
+		$sql = "SHOW default_with_oids";
+
+		return $this->selectField($sql, 'default_with_oids');
+	}
+
+
+	/**
+	 * Checks to see whether or not a table has a unique id column
+	 * @param $table The table name
+	 * @return True if it has a unique id, false otherwise
+	 * @return null error
+	 **/
+	function hasObjectID($table) {
+		$c_schema = $this->_schema;
+		$this->clean($c_schema);
+		$this->clean($table);
+
+		$sql = "SELECT relhasoids FROM pg_catalog.pg_class WHERE relname='{$table}'
+			AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='{$c_schema}')";
+
+		$rs = $this->selectSet($sql);
+		if ($rs->recordCount() != 1) return null;
+		else {
+			$rs->fields['relhasoids'] = $this->phpBool($rs->fields['relhasoids']);
+			return $rs->fields['relhasoids'];
+		}
+	}
+
+
+	// Capabilities
+	function hasServerOids() { return true; }
+
 
 
 }

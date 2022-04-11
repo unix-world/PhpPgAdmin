@@ -431,7 +431,9 @@
 	 */
 //	function ADOConnection() {
 	function __construct() {
-		die('Virtual Class -- cannot instantiate');
+		if(version_compare((string)phpversion(), '8.0') < 0) { // fix by unixman
+			die('Virtual Class -- cannot instantiate'); // this does not work in PHP8
+		} //end if
 	}
 
 	static function Version()
