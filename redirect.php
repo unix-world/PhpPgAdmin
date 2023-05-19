@@ -18,9 +18,9 @@
 		}
 
 		/* parse_str function is affected by magic_quotes_gpc */
-		if (ini_get('magic_quotes_gpc')) {
-			$misc->stripVar($urlvars);
-		}
+	//	if(ini_get('magic_quotes_gpc')) { // get_magic_quotes_gpc() has been DEPRECATED as of PHP 7.4.0, and REMOVED as of PHP 8.0.0
+	//		$misc->stripVar($urlvars);
+	//	}
 
 		$_REQUEST = array_merge($_REQUEST, $urlvars);
 		$_GET = array_merge($_GET, $urlvars);

@@ -838,23 +838,44 @@ class Postgres extends ADODB_base {
 
 	/**
 	 * Return all schemas in the current database.
+	 * @param $onlyName can speedup selection when only tree is needed, (fix by unixman)
 	 * @return All schemas, sorted alphabetically
 	 */
-	function getSchemas() {
+	function getSchemas(bool $onlyName=false) {
 		global $conf;
 
-		if (!$conf['show_system']) {
-			$where = "WHERE nspname NOT LIKE 'pg@_%' ESCAPE '@' AND nspname != 'information_schema'";
-
+		$where = '';
+		if(!$conf['show_system']) {
+			if($onlyName === true) {
+				$where = "WHERE schema_name NOT LIKE 'pg@_%' ESCAPE '@' AND schema_name != 'information_schema'";
+			} else {
+				$where = "WHERE nspname NOT LIKE 'pg@_%' ESCAPE '@' AND nspname != 'information_schema'";
+			}
+		} else {
+			if($onlyName === true) {
+				$where = "WHERE schema_name !~ '^pg_(temp_[0-9]+|toast)$'";
+			} else {
+				$where = "WHERE nspname !~ '^pg_(temp_[0-9]+|toast)$'";
+			}
 		}
-		else $where = "WHERE nspname !~ '^pg_t(emp_[0-9]+|oast)$'";
-		$sql = "
-			SELECT pn.nspname, pu.rolname AS nspowner,
-				pg_catalog.obj_description(pn.oid, 'pg_namespace') AS nspcomment
-			FROM pg_catalog.pg_namespace pn
-				LEFT JOIN pg_catalog.pg_roles pu ON (pn.nspowner = pu.oid)
-			{$where}
-			ORDER BY nspname";
+
+		if($onlyName === true) {
+			$sql = "
+				SELECT schema_name AS nspname, '' AS nspowner, '' AS nspcomment
+				FROM information_schema.schemata
+				{$where}
+				ORDER BY schema_name
+			";
+		} else {
+			$sql = "
+				SELECT pn.nspname, pu.rolname AS nspowner,
+					pg_catalog.obj_description(pn.oid, 'pg_namespace') AS nspcomment
+				FROM pg_catalog.pg_namespace pn
+					LEFT JOIN pg_catalog.pg_roles pu ON (pn.nspowner = pu.oid)
+				{$where}
+				ORDER BY nspname
+			";
+		}
 
 		return $this->selectSet($sql);
 	}

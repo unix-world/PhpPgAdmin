@@ -3,6 +3,8 @@
 	ini_set('display_errors', '1');	// display runtime errors
 	error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED); // error reporting
 
+	ini_set('memory_limit', '512M'); // set the memory limit
+
 	/**
 	 * Central phpPgAdmin configuration.  As a user you may modify the
 	 * settings here for your particular configuration.
@@ -31,7 +33,8 @@
 
 	// Change the default database only if you cannot connect to template1.
 	// For a PostgreSQL 8.1+ server, you can set this to 'postgres'.
-	$conf['servers'][0]['defaultdb'] = 'template1';
+//	$conf['servers'][0]['defaultdb'] = 'template1';
+	$conf['servers'][0]['defaultdb'] = 'postgres';
 
 	// Specify the path to the database dump utilities for this server.
 	// You can set these to '' if no dumper is available.
@@ -43,7 +46,7 @@
 	//$conf['servers'][1]['host'] = '127.0.0.1';
 	//$conf['servers'][1]['port'] = 5432;
 	//$conf['servers'][1]['sslmode'] = 'allow';
-	//$conf['servers'][1]['defaultdb'] = 'template1';
+	//$conf['servers'][1]['defaultdb'] = 'postgres';
 	//$conf['servers'][1]['pg_dump_path'] = 'C:\\Program Files\\PostgreSQL\\8.0\\bin\\pg_dump.exe';
 	//$conf['servers'][1]['pg_dumpall_path'] = 'C:\\Program Files\\PostgreSQL\\8.0\\bin\\pg_dumpall.exe';
 

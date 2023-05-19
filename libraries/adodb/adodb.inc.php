@@ -688,10 +688,13 @@
 	/**
 	 Requested by "Karsten Dambekalns" <k.dambekalns@fishfarm.de>
 	*/
+	// get_magic_quotes_gpc() has been DEPRECATED as of PHP 7.4.0, and REMOVED as of PHP 8.0.0
+	/*
 	function QMagic($s)
 	{
-		return $this->qstr($s,get_magic_quotes_gpc());
+		return $this->qstr($s, get_magic_quotes_gpc());
 	}
+	*/
 
 	function q(&$s)
 	{
@@ -2615,11 +2618,12 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		// undo magic quotes for "
 		$s = str_replace('\\"','"',$s);
 
-		if ($this->replaceQuote == "\\'" || ini_get('magic_quotes_sybase'))  // ' already quoted, no need to change anything
-			return $s;
-		else {// change \' to '' for sybase/mssql
-			$s = str_replace('\\\\','\\',$s);
-			return str_replace("\\'",$this->replaceQuote,$s);
+	//	if((string)$this->replaceQuote == "\\'" || ini_get('magic_quotes_sybase')) { // ' already quoted, no need to change anything
+		if((string)$this->replaceQuote == "\\'") { // INI directive 'magic_quotes_sybase' is deprecated from PHP 5.3 and removed from PHP 5.4
+			return (string) $s;
+		} else {// change \' to '' for sybase/mssql
+			$s = (string) str_replace('\\\\', '\\', (string)$s);
+			return (string) str_replace("\\'", (string)$this->replaceQuote, (string)$s);
 		}
 	}
 
@@ -2649,11 +2653,12 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		// undo magic quotes for "
 		$s = str_replace('\\"','"',$s);
 
-		if ($this->replaceQuote == "\\'" || ini_get('magic_quotes_sybase'))  // ' already quoted, no need to change anything
-			return "'$s'";
-		else {// change \' to '' for sybase/mssql
-			$s = str_replace('\\\\','\\',$s);
-			return "'".str_replace("\\'",$this->replaceQuote,$s)."'";
+	//	if((string)$this->replaceQuote == "\\'" || ini_get('magic_quotes_sybase')) {  // ' already quoted, no need to change anything
+		if((string)$this->replaceQuote == "\\'") {  // INI directive 'magic_quotes_sybase' is deprecated from PHP 5.3 and removed from PHP 5.4
+			return (string) "'$s'";
+		} else {// change \' to '' for sybase/mssql
+			$s = (string) str_replace('\\\\', '\\', (string)$s);
+			return (string) "'".str_replace("\\'", (string)$this->replaceQuote, (string)$s)."'";
 		}
 	}
 

@@ -17,11 +17,11 @@
 
 	// Application version
 //	$appVersion = '5.2-dev';
-	$appVersion = 'uxm.20220411'; // custom app version (separate maintenance)
+	$appVersion = 'uxm.20230504'; // custom app version (separate maintenance)
 
 	// PostgreSQL and PHP minimum version
-	$postgresqlMinVer = '7.4';
-	$phpMinVer = '5.6';
+	$postgresqlMinVer = '9.0';
+	$phpMinVer = '7.4';
 
 	// Check the version of PHP
 	if (version_compare(phpversion(), $phpMinVer, '<'))
@@ -58,20 +58,20 @@
 	}
 
 	// Do basic PHP configuration checks
-	if (ini_get('magic_quotes_gpc')) {
-		$misc->stripVar($_GET);
-		$misc->stripVar($_POST);
-		$misc->stripVar($_COOKIE);
-		$misc->stripVar($_REQUEST);
-	}
+//	if (ini_get('magic_quotes_gpc')) { // get_magic_quotes_gpc() has been DEPRECATED as of PHP 7.4.0, and REMOVED as of PHP 8.0.0
+//		$misc->stripVar($_GET);
+//		$misc->stripVar($_POST);
+//		$misc->stripVar($_COOKIE);
+//		$misc->stripVar($_REQUEST);
+//	}
 
 	// This has to be deferred until after stripVar above
 	$misc->setHREF();
 	$misc->setForm();
 
 	// Enforce PHP environment
-	ini_set('magic_quotes_runtime', 0);
-	ini_set('magic_quotes_sybase', 0);
+//	ini_set('magic_quotes_runtime', 0);
+//	ini_set('magic_quotes_sybase', 0);
 	ini_set('arg_separator.output', '&amp;');
 
 	// If login action is set, then set session variables

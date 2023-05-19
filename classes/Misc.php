@@ -413,12 +413,13 @@
 		 * enforce magic_quotes_gpc being off.
 		 * @param &var The variable to strip
 		 */
+		// get_magic_quotes_gpc() has been DEPRECATED as of PHP 7.4.0, and REMOVED as of PHP 8.0.0
+		/*
 		function stripVar(&$var) {
-			if (is_array($var)) {
+			if(is_array($var)) {
 				foreach($var as $k => $v) {
 					$this->stripVar($var[$k]);
-
-					/* magic_quotes_gpc escape keys as well ...*/
+					// magic_quotes_gpc escape keys as well ...
 					if (is_string($k)) {
 						$ek = stripslashes($k);
 						if ($ek !== $k) {
@@ -427,10 +428,11 @@
 						}
 					}
 				}
-			}
-			else
+			} else {
 				$var = stripslashes($var);
+			}
 		}
+		*/
 
 		/**
 		 * Print out the page heading and help link

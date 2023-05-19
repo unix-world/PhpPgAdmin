@@ -143,7 +143,7 @@
 			echo "</td>\n";
 			echo "<td class=\"data1\">";
 			echo "<input type=\"hidden\" name=\"original_function\" value=\"", htmlspecialchars($fndata->fields['proname']),"\" />\n";
-			echo "<input name=\"formFunction\" style=\"width: 100%\" maxlength=\"{$data->_maxNameLen}\" value=\"", htmlspecialchars($_POST['formFunction']), "\" />";
+			echo "<input name=\"formFunction\" style=\"width: 92%\" maxlength=\"{$data->_maxNameLen}\" value=\"", htmlspecialchars($_POST['formFunction']), "\" />";
 			echo "</td>\n";
 
 			echo "<td class=\"data1\">", $misc->printVal($args), "\n";

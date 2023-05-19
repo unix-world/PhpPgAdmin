@@ -390,7 +390,7 @@
 	function doTree() {
 		global $misc, $data, $lang;
 
-		$schemas = $data->getSchemas();
+		$schemas = $data->getSchemas(true);
 
 		$reqvars = $misc->getRequestVars('schema');
 

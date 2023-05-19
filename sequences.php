@@ -151,8 +151,8 @@
 		$sequence = $data->getSequence($_REQUEST['sequence']);
 
 		if (is_object($sequence) && $sequence->recordCount() > 0) {
-			$sequence->fields['is_cycled'] = $data->phpBool($sequence->fields['is_cycled']);
-			$sequence->fields['is_called'] = $data->phpBool($sequence->fields['is_called']);
+			$sequence->fields['is_cycled'] = $data->phpBool($sequence->fields['is_cycled'] ?? null);
+			$sequence->fields['is_called'] = $data->phpBool($sequence->fields['is_called'] ?? null);
 
 			// Show comment if any
 			if ($sequence->fields['seqcomment'] !== null)
@@ -585,8 +585,8 @@
 			if (!isset($_POST['newschema'])) $_POST['newschema'] = $sequence->fields['nspname'];
 
 			// Handle Checkbox Value
-			$sequence->fields['is_cycled'] = $data->phpBool($sequence->fields['is_cycled']);
-			if ($sequence->fields['is_cycled']) $_POST['formCycledValue'] = 'on';
+			$sequence->fields['is_cycled'] = $data->phpBool($sequence->fields['is_cycled'] ?? null);
+			if($sequence->fields['is_cycled']) $_POST['formCycledValue'] = 'on';
 
 			echo "<form action=\"sequences.php\" method=\"post\">\n";
 			echo "<table>\n";
@@ -632,28 +632,28 @@
 			if ($data->hasAlterSequenceStart()) {
 				echo "<tr><th class=\"data left\">{$lang['strstartvalue']}</th>\n";
 				echo "<td class=\"data1\"><input name=\"formStartValue\" size=\"5\" value=\"",
-					htmlspecialchars($sequence->fields['start_value']), "\" /></td></tr>\n";
+					htmlspecialchars($sequence->fields['start_value'] ?? null), "\" /></td></tr>\n";
 			}
 
 			echo "<tr><th class=\"data left\">{$lang['strrestartvalue']}</th>\n";
 			echo "<td class=\"data1\"><input name=\"formRestartValue\" size=\"5\" value=\"",
-				htmlspecialchars($sequence->fields['last_value']), "\" /></td></tr>\n";
+				htmlspecialchars($sequence->fields['last_value'] ?? null), "\" /></td></tr>\n";
 
 			echo "<tr><th class=\"data left\">{$lang['strincrementby']}</th>\n";
 			echo "<td class=\"data1\"><input name=\"formIncrement\" size=\"5\" value=\"",
-				htmlspecialchars($sequence->fields['increment_by']), "\" /> </td></tr>\n";
+				htmlspecialchars($sequence->fields['increment_by'] ?? null), "\" /> </td></tr>\n";
 
 			echo "<tr><th class=\"data left\">{$lang['strmaxvalue']}</th>\n";
 			echo "<td class=\"data1\"><input name=\"formMaxValue\" size=\"5\" value=\"",
-				htmlspecialchars($sequence->fields['max_value']), "\" /></td></tr>\n";
+				htmlspecialchars($sequence->fields['max_value'] ?? null), "\" /></td></tr>\n";
 
 			echo "<tr><th class=\"data left\">{$lang['strminvalue']}</th>\n";
 			echo "<td class=\"data1\"><input name=\"formMinValue\" size=\"5\" value=\"",
-				htmlspecialchars($sequence->fields['min_value']), "\" /></td></tr>\n";
+				htmlspecialchars($sequence->fields['min_value'] ?? null), "\" /></td></tr>\n";
 
 			echo "<tr><th class=\"data left\">{$lang['strcachevalue']}</th>\n";
 			echo "<td class=\"data1\"><input name=\"formCacheValue\" size=\"5\" value=\"",
-				htmlspecialchars($sequence->fields['cache_value']), "\" /></td></tr>\n";
+				htmlspecialchars($sequence->fields['cache_value'] ?? null), "\" /></td></tr>\n";
 
 			echo "<tr><th class=\"data left\"><label for=\"formCycledValue\">{$lang['strcancycle']}</label></th>\n";
 			echo "<td class=\"data1\"><input type=\"checkbox\" id=\"formCycledValue\" name=\"formCycledValue\" ",
