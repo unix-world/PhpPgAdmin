@@ -25,7 +25,7 @@
 		else
 			doProperties($lang['strmemberaddedbad']);
 	}
-
+	
 	/**
 	 * Show confirmation of drop user from group and perform actual drop
 	 */
@@ -33,12 +33,12 @@
 		global $data, $misc;
 		global $lang;
 
-		if ($confirm) {
+		if ($confirm) { 
 			$misc->printTrail('group');
 			$misc->printTitle($lang['strdropmember'],'pg.group.alter');
-
+			
 			echo "<p>", sprintf($lang['strconfdropmember'], $misc->printVal($_REQUEST['user']), $misc->printVal($_REQUEST['group'])), "</p>\n";
-
+			
 			echo "<form action=\"groups.php\" method=\"post\">\n";
 			echo $misc->form;
 			echo "<input type=\"hidden\" name=\"action\" value=\"drop_member\" />\n";
@@ -54,25 +54,25 @@
 				doProperties($lang['strmemberdropped']);
 			else
 				doDropMember(true, $lang['strmemberdroppedbad']);
-		}
+		}		
 	}
-
+	
 	/**
 	 * Show read only properties for a group
 	 */
 	function doProperties($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+	
 		if (!isset($_POST['user'])) $_POST['user'] = '';
-
+	
 		$misc->printTrail('group');
 		$misc->printTitle($lang['strproperties'],'pg.group');
 		$misc->printMsg($msg);
-
+		
 		$groupdata = $data->getGroup($_REQUEST['group']);
 		$users = $data->getUsers();
-
+		
 		if ($groupdata->recordCount() > 0) {
 			$columns = array (
 				'members' => array (
@@ -103,7 +103,7 @@
 			$misc->printTable($groupdata, $columns, $actions, 'groups-members', $lang['strnousers']);
 		}
 
-		// Display form for adding a user to the group
+		// Display form for adding a user to the group			
 		echo "<form action=\"groups.php\" method=\"post\">\n";
 		echo "<select name=\"user\">";
 		while (!$users->EOF) {
@@ -118,7 +118,7 @@
 		echo "<input type=\"hidden\" name=\"group\" value=\"", htmlspecialchars($_REQUEST['group']), "\" />\n";
 		echo "<input type=\"hidden\" name=\"action\" value=\"add_member\" />\n";
 		echo "</form>\n";
-
+		
 		$misc->printNavLinks(array ('showall' => array (
 				'attr'=> array (
 					'href' => array (
@@ -131,7 +131,7 @@
 				'content' => $lang['strshowallgroups']
 			)), 'groups-properties', get_defined_vars());
 	}
-
+	
 	/**
 	 * Show confirmation of drop and perform actual drop
 	 */
@@ -142,9 +142,9 @@
 		if ($confirm) {
 			$misc->printTrail('group');
 			$misc->printTitle($lang['strdrop'],'pg.group.drop');
-
+			
 			echo "<p>", sprintf($lang['strconfdropgroup'], $misc->printVal($_REQUEST['group'])), "</p>\n";
-
+			
 			echo "<form action=\"groups.php\" method=\"post\">\n";
 			echo $misc->form;
 			echo "<input type=\"hidden\" name=\"action\" value=\"drop\" />\n";
@@ -159,22 +159,22 @@
 				doDefault($lang['strgroupdropped']);
 			else
 				doDefault($lang['strgroupdroppedbad']);
-		}
+		}		
 	}
-
+	
 	/**
 	 * Displays a screen where they can enter a new group
 	 */
 	function doCreate($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		if (!isset($_POST['name'])) $_POST['name'] = '';
 		if (!isset($_POST['members'])) $_POST['members'] = array();
 
 		// Fetch a list of all users in the cluster
 		$users = $data->getUsers();
-
+		
 		$misc->printTrail('server');
 		$misc->printTitle($lang['strcreategroup'],'pg.group.create');
 		$misc->printMsg($msg);
@@ -204,7 +204,7 @@
 		echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 		echo "</form>\n";
 	}
-
+	
 	/**
 	 * Actually creates the new group in the database
 	 */
@@ -217,14 +217,14 @@
 		// Check form vars
 		if (trim($_POST['name']) == '')
 			doCreate($lang['strgroupneedsname']);
-		else {
+		else {		
 			$status = $data->createGroup($_POST['name'], $_POST['members']);
 			if ($status == 0)
 				doDefault($lang['strgroupcreated']);
 			else
 				doCreate($lang['strgroupcreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * Show default list of groups in the database
@@ -232,13 +232,13 @@
 	function doDefault($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('server');
 		$misc->printTabs('server','groups');
 		$misc->printMsg($msg);
-
+		
 		$groups = $data->getGroups();
-
+		
 		$columns = array(
 			'group' => array(
 				'title' => $lang['strgroup'],
@@ -250,7 +250,7 @@
 				'title' => $lang['stractions'],
 			),
 		);
-
+		
 		$actions = array(
 			'drop' => array(
 				'content' => $lang['strdrop'],
@@ -265,9 +265,9 @@
 				)
 			),
 		);
-
+		
 		$misc->printTable($groups, $columns, $actions, 'groups-properties', $lang['strnogroups']);
-
+		
 		$misc->printNavLinks(array ('create' => array (
 				'attr'=> array (
 					'href' => array (
@@ -296,7 +296,7 @@
 			break;
 		case 'confirm_drop_member':
 			doDropMember(true);
-			break;
+			break;			
 		case 'save_create':
 			if (isset($_REQUEST['cancel'])) doDefault();
 			else doSaveCreate();
@@ -310,7 +310,7 @@
 			break;
 		case 'confirm_drop':
 			doDrop(true);
-			break;
+			break;			
 		case 'save_edit':
 			doSaveEdit();
 			break;
@@ -323,7 +323,7 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

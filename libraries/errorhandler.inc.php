@@ -28,7 +28,7 @@ function Error_Handler($dbms, $fn, $errno, $errmsg, $p1=false, $p2=false)
 	case 'EXECUTE':
 		$sql = $p1;
 		$inputparams = $p2;
-
+		
 		$s = "<p><b>{$lang['strsqlerror']}</b><br />" . $misc->printVal($errmsg,'errormsg') . "</p>
 		      <p><b>{$lang['strinstatement']}</b><br />" . $misc->printVal($sql) . "</p>
 		";
@@ -75,5 +75,4 @@ function Error_Handler($dbms, $fn, $errno, $errmsg, $p1=false, $p2=false)
 			error_log("($t) $s", ADODB_ERROR_LOG_TYPE);
 	}
 }
-
 ?>

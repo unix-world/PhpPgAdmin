@@ -12,7 +12,6 @@
 		var $form;
 
 		/* Constructor */
-	//	function Misc() {
 		function __construct() {
 		}
 
@@ -262,8 +261,12 @@
 			if (isset($params['clip']) && $params['clip'] === true) {
 				$maxlen = isset($params['cliplen']) && is_integer($params['cliplen']) ? $params['cliplen'] : $conf['max_chars'];
 				$ellipsis = isset($params['ellipsis']) ? $params['ellipsis'] : $lang['strellipsis'];
-				if (strlen($str) > $maxlen) {
-					$str = substr($str, 0, $maxlen-1) . $ellipsis;
+				if (mb_strlen($str, 'UTF-8') > $maxlen + mb_strlen($ellipsis)) {
+					$full_str = $ellipsis . mb_substr($str, $maxlen-1, $maxlen*8, 'UTF-8');
+					$str = mb_substr($str, 0, $maxlen-1, 'UTF-8') . $ellipsis;
+				} elseif (strlen($str) > 19 and substr($type, 0, 9) == 'timestamp') {
+					$full_str = substr($str, 19, $maxlen*8);
+					$str = substr($str, 0, 19);
 				}
 			}
 
@@ -308,6 +311,10 @@
 					$tag = 'div';
 					$class = 'pre';
 					$out = $data->escapeBytea($str);
+					break;
+				case 'macaddr':
+					$tag = 'tt';
+					$out = $str;
 					break;
 				case 'errormsg':
 					$tag = 'pre';
@@ -374,8 +381,10 @@
 						$tag = 'pre';
 						$class = 'data';
 						$out = htmlspecialchars($str);
+						if (isset($full_str)) $out = '<abbr title="' . htmlspecialchars($full_str) . "\">$out</abbr>";
 					} else {
 						$out = nl2br(htmlspecialchars($str));
+						if (isset($full_str)) $out = '<abbr title="' . nl2br(htmlspecialchars($full_str)) . "\">$out</abbr>";
 					}
 			}
 
@@ -409,32 +418,6 @@
 		}
 
 		/**
-		 * A function to recursively strip slashes.  Used to
-		 * enforce magic_quotes_gpc being off.
-		 * @param &var The variable to strip
-		 */
-		// get_magic_quotes_gpc() has been DEPRECATED as of PHP 7.4.0, and REMOVED as of PHP 8.0.0
-		/*
-		function stripVar(&$var) {
-			if(is_array($var)) {
-				foreach($var as $k => $v) {
-					$this->stripVar($var[$k]);
-					// magic_quotes_gpc escape keys as well ...
-					if (is_string($k)) {
-						$ek = stripslashes($k);
-						if ($ek !== $k) {
-							$var[$ek] = $var[$k];
-							unset($var[$k]);
-						}
-					}
-				}
-			} else {
-				$var = stripslashes($var);
-			}
-		}
-		*/
-
-		/**
 		 * Print out the page heading and help link
 		 * @param $title Title, already escaped
 		 * @param $help (optional) The identifier for the help link
@@ -459,7 +442,7 @@
 		 * Creates a database accessor
 		 */
 		function getDatabaseAccessor($database, $server_id = null) {
-			global $lang, $conf, $misc, $_connection;
+			global $lang, $conf, $misc, $_connection, $postgresqlMinVer;
 
 			$server_info = $this->getServerInfo($server_id);
 
@@ -497,7 +480,7 @@
 				exit;
 			}
 			$this->setServerInfo('platform', $platform, $server_id);
-			$this->setServerInfo('pgVersion', $_connection->conn->pgVersion, $server_id);
+			$this->setServerInfo('pgVersion', $_connection->conn->ServerInfo()['version'], $server_id);
 
 			// Create a database wrapper class for easy manipulation of the
 			// connection.
@@ -540,21 +523,54 @@
 				if (strcasecmp($lang['applangdir'], 'ltr') != 0) echo " dir=\"", htmlspecialchars($lang['applangdir']), "\"";
 				echo ">\n";
 
-				echo "<head>\n";
-				echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
-				// Theme
-				echo "<link rel=\"stylesheet\" href=\"themes/{$conf['theme']}/global.css\" type=\"text/css\" id=\"csstheme\" />\n";
-				echo "<link rel=\"shortcut icon\" href=\"images/themes/{$conf['theme']}/Favicon.ico\" type=\"image/vnd.microsoft.icon\" />\n";
-				echo "<link rel=\"icon\" type=\"image/png\" href=\"images/themes/{$conf['theme']}/Introduction.png\" />\n";
-				echo "<script type=\"text/javascript\" src=\"libraries/js/jquery.js\"></script>";
-				echo "<script type=\"text/javascript\">// <!-- \n";
-				echo "$(document).ready(function() { \n";
-				echo "  if (window.parent.frames.length > 1)\n";
-				echo "    $('#csstheme', window.parent.frames[0].document).attr('href','themes/{$conf['theme']}/global.css');\n";
-				echo "}); // --></script>\n";
-				echo "<title>", htmlspecialchars($appName);
-				if ($title != '') echo htmlspecialchars(" - {$title}");
-				echo "</title>\n";
+				$_formatTitle = '';
+				if (!empty($title)) {
+					$_formatTitle = htmlspecialchars($appName . ' - ' . $title);
+				} else {
+					$_formatTitle = htmlspecialchars($appName);
+				}
+
+				echo <<<EOL
+				<head>
+					<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+					<link rel="stylesheet" href="themes/{$conf['theme']}/global.css" type="text/css" id="csstheme" />
+					<link rel="shortcut icon" href="images/themes/{$conf['theme']}/Favicon.ico" type="image/vnd.microsoft.icon" />
+					<link rel="icon" type="image/png" href="images/themes/{$conf['theme']}/Introduction.png" />
+					<script type="text/javascript" src="libraries/js/jquery.js"></script>
+
+					<script type="text/javascript">
+						$(function() {
+							if (window.parent.frames.length > 1) {
+								$('#csstheme', window.parent.frames[0].document).attr('href','themes/{$conf['theme']}/global.css');
+							}
+						});
+
+				EOL;
+				if (!$frameset) echo <<<EOL
+
+						if ("{$_SERVER['REQUEST_METHOD']}" === "GET" && (window.self === window.top)) {
+							$.post(new URL('./', location.href).href, { _originalPath: location.href }, function (data) {
+								// GET request from outside frame. Reload encapsulated in our frameset.
+								document.write(data);
+
+								history.replaceState({}, '', new URL('./', location.href).href);
+							});
+						}
+
+						$(function() {
+							top.document.title = document.title;
+						});
+
+
+				EOL;
+
+				echo <<<EOL
+					</script>
+
+					<title>{$_formatTitle}</title>
+
+				EOL;
+
 
 				if ($script) echo "{$script}\n";
 
@@ -623,19 +639,18 @@
 		/**
 		 * Display a link
 		 * @param $link An associative array of link parameters to print
-		 *     link = array(
-		 *       'attr' => array( // list of A tag attribute
-		 *          'attrname' => attribute value
-		 *          ...
-		 *       ),
-		 *       'content' => The link text
-		 *       'fields' => (optionnal) the data from which content and attr's values are obtained
-		 *     );
-		 *   the special attribute 'href' might be a string or an array. If href is an array it
-		 *   will be generated by getActionUrl. See getActionUrl comment for array format.
+		 * 	link = array(
+		 * 		'attr' => array( // list of A tag attribute
+		 * 			'attrname' => attribute value
+		 * 			...
+		 * 		),
+		 *		'content' => The link text
+		 * 		'fields' => (optional) the data from which content and attr's values are obtained
+		 * 	);
+		 * the special attribute 'href' might be a string or an array. If href is an array it
+		 * will be generated by getActionUrl. See getActionUrl comment for array format.
 		 */
 		function printLink($link) {
-
 			if (! isset($link['fields']))
 				$link['fields'] = $_REQUEST;
 
@@ -685,14 +700,15 @@
 			echo "<table class=\"tabs\"><tr>\n";
 			#echo "<div class=\"tabs\">\n";
 
-			# FIXME: don't count hidden tabs
-			$width = (int)(100 / count($tabs)).'%';
+			if (count($tabs) > 0)
+				$width = (int)(100 / count($tabs)).'%';
+			else
+				$width = 1;
 
 			foreach ($tabs as $tab_id => $tab) {
 				$active = ($tab_id == $activetab) ? ' active' : '';
 
 				if (!isset($tab['hide']) || $tab['hide'] !== true) {
-
 					$tablink = '<a href="' . htmlentities($this->getActionUrl($tab, $_REQUEST)) . '">';
 
 					if (isset($tab['icon']) && $icon = $this->icon($tab['icon']))
@@ -934,14 +950,6 @@
 							'help'  => 'pg.function',
 							'icon'  => 'Functions',
 						),
-						'aggregates' => array (
-							'title' => $lang['straggregates'],
-							'url'   => 'aggregates.php',
-							'urlvars' => array('subject' => 'schema'),
-						//	'hide'  => $hide_advanced,
-							'help'  => 'pg.aggregate',
-							'icon'  => 'Aggregates',
-						),
 						'fulltext' => array (
 							'title' => $lang['strfulltext'],
 							'url'   => 'fulltext.php',
@@ -956,6 +964,14 @@
 							'urlvars' => array('subject' => 'schema'),
 							'help'  => 'pg.domain',
 							'icon'  => 'Domains',
+						),
+						'aggregates' => array (
+							'title' => $lang['straggregates'],
+							'url'   => 'aggregates.php',
+							'urlvars' => array('subject' => 'schema'),
+							'hide'  => $hide_advanced,
+							'help'  => 'pg.aggregate',
+							'icon'  => 'Aggregates',
 						),
 						'types' => array (
 							'title' => $lang['strtypes'],
@@ -1024,7 +1040,6 @@
 							'url'   => 'display.php',
 							'urlvars' => array ('subject' => 'table','table' => field('table')),
 							'return' => 'table',
-							'branch'=> true,
 						),
 						'select' => array(
 							'title' => $lang['strselect'],
@@ -1130,7 +1145,6 @@
 									'subject' => 'view',
 									'view' => field('view')
 							),
-							'branch'=> true,
 						),
 						'select' => array(
 							'title' => $lang['strselect'],
@@ -1271,37 +1285,37 @@
 					);
 					break;
 
-                case 'fulltext':
-                    $tabs = array (
-                        'ftsconfigs' => array (
-                            'title' => $lang['strftstabconfigs'],
-                            'url'   => 'fulltext.php',
-                            'urlvars' => array('subject' => 'schema'),
-                            'hide'  => !$data->hasFTS(),
-                            'help'  => 'pg.ftscfg',
-                            'tree'  => true,
-                            'icon'  => 'FtsCfg',
-                        ),
-                        'ftsdicts' => array (
-                            'title' => $lang['strftstabdicts'],
-                            'url'   => 'fulltext.php',
-                            'urlvars' => array('subject' => 'schema', 'action' => 'viewdicts'),
-                            'hide'  => !$data->hasFTS(),
-                            'help'  => 'pg.ftsdict',
-                            'tree'  => true,
-                            'icon'  => 'FtsDict',
-                        ),
-                        'ftsparsers' => array (
-                            'title' => $lang['strftstabparsers'],
-                            'url'   => 'fulltext.php',
-                            'urlvars' => array('subject' => 'schema', 'action' => 'viewparsers'),
-                            'hide'  => !$data->hasFTS(),
-                            'help'  => 'pg.ftsparser',
-                            'tree'  => true,
-                            'icon'  => 'FtsParser',
-                        ),
-                    );
-                    break;
+				case 'fulltext':
+					$tabs = array (
+						'ftsconfigs' => array (
+							'title' => $lang['strftstabconfigs'],
+							'url'   => 'fulltext.php',
+							'urlvars' => array('subject' => 'schema'),
+							'hide'  => !$data->hasFTS(),
+							'help'  => 'pg.ftscfg',
+							'tree'  => true,
+							'icon'  => 'FtsCfg',
+						),
+						'ftsdicts' => array (
+							'title' => $lang['strftstabdicts'],
+							'url'   => 'fulltext.php',
+							'urlvars' => array('subject' => 'schema', 'action' => 'viewdicts'),
+							'hide'  => !$data->hasFTS(),
+							'help'  => 'pg.ftsdict',
+							'tree'  => true,
+							'icon'  => 'FtsDict',
+						),
+						'ftsparsers' => array (
+							'title' => $lang['strftstabparsers'],
+							'url'   => 'fulltext.php',
+							'urlvars' => array('subject' => 'schema', 'action' => 'viewparsers'),
+							'hide'  => !$data->hasFTS(),
+							'help'  => 'pg.ftsparser',
+							'tree'  => true,
+							'icon'  => 'FtsParser',
+						),
+					);
+					break;
 			}
 
 			// Tabs hook's place
@@ -1336,10 +1350,14 @@
 			$server_info = $this->getServerInfo();
 			$reqvars = $this->getRequestVars('table');
 
+			if (isset($conf['extra_session_security']) && $conf['extra_session_security'] === false) {
+				echo '<div class="alert-banner"><p><a href="https://www.php.net/manual/en/session.configuration.php#ini.session.cookie-samesite" target="_blank" rel="noopener noreferrer">', htmlspecialchars($lang['sessionsecuritywarning']), '</a></p></div>';
+			}
+
 			echo "<div class=\"topbar\"><table style=\"width: 100%\"><tr><td>";
 
 			if ($server_info && isset($server_info['platform']) && isset($server_info['username'])) {
-				/* top left informations when connected */
+				/* top left information when connected */
 				echo sprintf($lang['strtopbar'],
 					'<span class="platform">'.htmlspecialchars($server_info['platform']).'</span>',
 					'<span class="host">'.htmlspecialchars((empty($server_info['host'])) ? 'localhost':$server_info['host']).'</span>',
@@ -1348,7 +1366,7 @@
 
 				echo "</td>";
 
-				/* top right informations when connected */
+				/* top right information when connected */
 
 				$toplinks = array (
 					'sql' => array (
@@ -1419,17 +1437,17 @@
 				$history_window_id = htmlentities('history:'.$_REQUEST['server']);
 
 				echo "<script type=\"text/javascript\">
-						$('#toplink_sql').click(function() {
+						$('#toplink_sql').on('click', function() {
 							window.open($(this).attr('href'),'{$sql_window_id}','toolbar=no,width=700,height=500,resizable=yes,scrollbars=yes').focus();
 							return false;
 						});
 
-						$('#toplink_history').click(function() {
+						$('#toplink_history').on('click', function() {
 							window.open($(this).attr('href'),'{$history_window_id}','toolbar=no,width=700,height=500,resizable=yes,scrollbars=yes').focus();
 							return false;
 						});
 
-						$('#toplink_find').click(function() {
+						$('#toplink_find').on('click', function() {
 							window.open($(this).attr('href'),'{$sql_window_id}','toolbar=no,width=700,height=500,resizable=yes,scrollbars=yes').focus();
 							return false;
 						});
@@ -1437,7 +1455,7 @@
 
 				if (isset($_SESSION['sharedUsername'])) {
 					printf("
-						$('#toplink_logout').click(function() {
+						$('#toplink_logout').on('click', function() {
 							return confirm('%s');
 						});", str_replace("'", "\'", $lang['strconfdropcred']));
 				}
@@ -1446,7 +1464,7 @@
 				</script>";
 			}
 			else {
-				echo "<span class=\"appname\">{$appName}</span> <span class=\"version\">{$appVersion} (PHP ".phpversion().")</span>";
+				echo "<span class=\"appname\">{$appName}</span> <span class=\"version\">{$appVersion}</span>";
 			}
 /*
 			echo "<td style=\"text-align: right; width: 1%\">";
@@ -1671,7 +1689,7 @@
 		* @param $navlinks - An array with the the attributes and values that will be shown. See printLinksList for array format.
 		* @param $place - Place where the $navlinks are displayed. Like 'display-browse', where 'display' is the file (display.php)
 		* @param $env - Associative array of defined variables in the scope of the caller.
-		*               Allows to give some environnement details to plugins.
+		*               Allows to give some environment details to plugins.
 		* and 'browse' is the place inside that code (doBrowse).
 		*/
 		function printNavLinks($navlinks, $place, $env = array()) {
@@ -1791,7 +1809,7 @@
 		}
 
 		/**
-		 * Converts a PHP.INI size variable to bytes.  Taken from publically available
+		 * Converts a PHP.INI size variable to bytes.  Taken from publicly available
 		 * function by Chris DeRose, here: http://www.php.net/manual/en/configuration.directives.php#ini.file-uploads
 		 * @param $strIniSize The PHP.INI variable
 		 * @return size in bytes, false on failure
@@ -1799,7 +1817,7 @@
 		function inisizeToBytes($strIniSize) {
 			// This function will take the string value of an ini 'size' parameter,
 			// and return a double (64-bit float) representing the number of bytes
-			// that the parameter represents. Or false if $strIniSize is unparseable.
+			// that the parameter represents. Or false if $strIniSize is unparsable.
 			$a_IniParts = array();
 
 			if (!is_string($strIniSize))
@@ -1948,7 +1966,6 @@
 			unset($actions['multiactions']);
 
 			if ($tabledata->recordCount() > 0) {
-
 				// Remove the 'comment' column if they have been disabled
 				if (!$conf['show_comments']) {
 					unset($columns['comment']);
@@ -1971,12 +1988,12 @@
 				echo "<table>\n";
 				echo "<tr>\n";
 
-                // Handle cases where no class has been passed
-                if (isset($column['class'])) {
-			        $class = $column['class'] !== '' ? " class=\"{$column['class']}\"":'';
-                } else {
-                    $class = '';
-                }
+				// Handle cases where no class has been passed
+				if (isset($column['class'])) {
+					$class = $column['class'] !== '' ? " class=\"{$column['class']}\"":'';
+				} else {
+					$class = '';
+				}
 
 				// Display column headings
 				if ($has_ma) echo "<th></th>";
@@ -2016,7 +2033,6 @@
 					}
 
 					foreach ($columns as $column_id => $column) {
-
 						// Apply default values for missing parameters
 						if (isset($column['url']) && !isset($column['vars'])) $column['vars'] = array();
 
@@ -2169,7 +2185,6 @@
 
 			if (count($treedata) > 0) {
 				foreach($treedata as $rec) {
-
 					echo "<tree";
 					echo value_xml_attr('text', $attrs['text'], $rec);
 					echo value_xml_attr('action', $attrs['action'], $rec);
@@ -2440,10 +2455,10 @@
 
 		/**
 		 * Set server information.
-		 * @param $key parameter name to set, or null to replace all
+		 * @param $key string parameter name to set, or null to replace all
 		 *             params with the assoc-array in $value.
-		 * @param $value the new value, or null to unset the parameter
-		 * @param $server_id the server identifier, or null for current
+		 * @param $value string the new value, or null to unset the parameter
+		 * @param $server_id string the server identifier, or null for current
 		 *                   server.
 		 */
 		function setServerInfo($key, $value, $server_id = null)
@@ -2524,7 +2539,6 @@
 			$databases = $data->getDatabases();
 
 			if ($databases->recordCount() > 0) {
-
 				echo "<label>";
 				$misc->printHelp($lang['strdatabase'], 'pg.database');
 				echo ": <select name=\"database\" {$onchange}>\n";
@@ -2554,7 +2568,7 @@
 		/**
 		 * returns an array representing FKs definition for a table, sorted by fields
 		 * or by constraint.
-		 * @param $table The table to retrieve FK contraints from
+		 * @param $table The table to retrieve FK constraints from
 		 * @returns the array of FK definition:
 		 *   array(
 		 *     'byconstr' => array(
@@ -2653,5 +2667,4 @@
 			return $fksprops;
 		}
 	}
-
 ?>

@@ -8,7 +8,7 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 
@@ -27,11 +27,11 @@
 				default: return $lang['stryes'];
 			}
 		}
-
+		
 		$misc->printTrail('database');
 		$misc->printTabs('database','casts');
 		$misc->printMsg($msg);
-
+		
 		$casts = $data->getCasts();
 
 		$columns = array(
@@ -61,7 +61,7 @@
 		);
 
 		$actions = array();
-
+		
 		$misc->printTable($casts, $columns, $actions, 'casts-casts', $lang['strnocasts']);
 	}
 
@@ -70,22 +70,22 @@
 	 */
 	function doTree() {
 		global $misc, $data;
-
+		
 		$casts = $data->getCasts();
-
+		
 		$proto = concat(field('castsource'), ' AS ', field('casttarget'));
-
+		
 		$attrs = array(
 			'text'   => $proto,
 			'icon'   => 'Cast'
 		);
-
+		
 		$misc->printTree($casts, $attrs, 'casts');
 		exit;
 	}
-
+	
 	if ($action == 'tree') doTree();
-
+	
 	$misc->printHeader($lang['strcasts']);
 	$misc->printBody();
 
@@ -96,7 +96,7 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

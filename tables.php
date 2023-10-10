@@ -46,8 +46,12 @@
 				echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strnumcols']}</th>\n";
 				echo "\t\t<td class=\"data\"><input name=\"fields\" size=\"5\" maxlength=\"{$data->_maxNameLen}\" value=\"",
 					htmlspecialchars($_REQUEST['fields']), "\" /></td>\n\t</tr>\n";
-				echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['stroptions']}</th>\n";
-				echo "\t\t<td class=\"data\"><label for=\"withoutoids\"><input type=\"checkbox\" id=\"withoutoids\" name=\"withoutoids\"", isset($_REQUEST['withoutoids']) ? ' checked="checked"' : '', " />WITHOUT OIDS</label></td>\n\t</tr>\n";
+				if ($data->hasServerOids()) {
+					echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['stroptions']}</th>\n";
+					echo "\t\t<td class=\"data\"><label for=\"withoutoids\"><input type=\"checkbox\" id=\"withoutoids\" name=\"withoutoids\"", isset($_REQUEST['withoutoids']) ? ' checked="checked"' : '', " />WITHOUT OIDS</label></td>\n\t</tr>\n";
+				} else {
+					echo "\t\t<input type=\"hidden\" id=\"withoutoids\" name=\"withoutoids\" value=\"checked\"\n";
+				}
 
 				// Tablespace (if there are any)
 				if ($data->hasTablespaces() && $tablespaces->recordCount() > 0) {
@@ -251,7 +255,7 @@
 			if (!isset($_REQUEST['tablespace'])) $_REQUEST['tablespace'] = '';
 
 			$misc->printTrail('schema');
-		    $misc->printTitle($lang['strcreatetable'], 'pg.table.create');
+			$misc->printTitle($lang['strcreatetable'], 'pg.table.create');
 			$misc->printMsg($msg);
 
 			$tbltmp = $data->getTables(true);
@@ -263,7 +267,7 @@
 				$data->fieldClean($a['nspname']);
 				$data->fieldClean($a['relname']);
 				$tables["\"{$a['nspname']}\".\"{$a['relname']}\""] = serialize(array('schema' => $a['nspname'], 'table' => $a['relname']));
-				if ($_REQUEST['like'] == $tables["\"{$a['nspname']}\".\"{$a['relname']}\""])
+				if ($_REQUEST['like'] == $tables["\"{$a['nspname']}\".\"{$a['relname']}\""]) 
 					$tblsel = htmlspecialchars($tables["\"{$a['nspname']}\".\"{$a['relname']}\""]);
 			}
 
@@ -303,9 +307,6 @@
 					isset($_REQUEST['withindexes']) ? ' checked="checked"' : '',
 					"/>{$lang['strcreatelikewithindexes']}</label>";
 			}
-			echo "<br /><label for=\"withcomments\"><input type=\"checkbox\" id=\"withcomments\" name=\"withcomments\"",
-				' checked="checked" readonly disabled',
-				"/>{$lang['strcreatelikewithcomments']}</label>";
 			echo "</td>\n\t</tr>\n";
 			echo "</table>";
 
@@ -329,7 +330,7 @@
 
 			if (!isset($_REQUEST['tablespace'])) $_REQUEST['tablespace'] = '';
 
-			$status = $data->createTableLike($_REQUEST['name'], unserialize($_REQUEST['like']), isset($_REQUEST['withdefaults']),
+			$status = $data->createTableLike($_REQUEST['name'], safeUnserialize($_REQUEST['like']), isset($_REQUEST['withdefaults']),
 				isset($_REQUEST['withconstraints']), isset($_REQUEST['withindexes']), $_REQUEST['tablespace']);
 
 			if ($status == 0) {
@@ -562,7 +563,7 @@
 		else {
 			if (!isset($_POST['values'])) $_POST['values'] = array();
 			if (!isset($_POST['nulls'])) $_POST['nulls'] = array();
-			$_POST['fields'] = unserialize(htmlspecialchars_decode($_POST['fields'], ENT_QUOTES));
+			$_POST['fields'] = safeUnserialize(htmlspecialchars_decode($_POST['fields'], ENT_QUOTES));
 
 			if ($_SESSION['counter']++ == $_POST['protection_counter']) {
 				$status = $data->insertRow($_POST['table'], $_POST['fields'], $_POST['values'],
@@ -603,11 +604,11 @@
 
 				echo "<form action=\"tables.php\" method=\"post\">\n";
 				foreach ($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfemptytable'], $misc->printVal($a['table'])), "</p>\n";
 					printf('<input type="hidden" name="table[]" value="%s" />', htmlspecialchars($a['table']));
 				}
-			} // END mutli empty
+			} // END multi empty
 			else {
 				$misc->printTrail('table');
 				$misc->printTitle($lang['strempty'],'pg.table.empty');
@@ -616,7 +617,7 @@
 
 				echo "<form action=\"tables.php\" method=\"post\">\n";
 				echo "<input type=\"hidden\" name=\"table\" value=\"", htmlspecialchars($_REQUEST['table']), "\" />\n";
-			} // END not mutli empty
+			} // END not multi empty
 
 			echo "<input type=\"hidden\" name=\"action\" value=\"empty\" />\n";
 			echo $misc->form;
@@ -636,14 +637,14 @@
 					}
 				}
 				doDefault($msg);
-			} // END mutli empty
+			} // END multi empty
 			else {
 				$status = $data->emptyTable($_POST['table']);
 				if ($status == 0)
 					doDefault($lang['strtableemptied']);
 				else
 					doDefault($lang['strtableemptiedbad']);
-			} // END not mutli empty
+			} // END not multi empty
 		} // END do Empty
 	}
 
@@ -668,7 +669,7 @@
 
 				echo "<form action=\"tables.php\" method=\"post\">\n";
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfdroptable'], $misc->printVal($a['table'])), "</p>\n";
 					printf('<input type="hidden" name="table[]" value="%s" />', htmlspecialchars($a['table']));
 				}
@@ -1051,5 +1052,3 @@
 	}
 
 	$misc->printFooter();
-
-?>

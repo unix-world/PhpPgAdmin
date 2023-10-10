@@ -177,7 +177,8 @@
 	$lang['strnoframes'] = 'This application works best with a frames-enabled browser, but can be used without frames by following the link below.';
 	$lang['strnoframeslink'] = 'Use without frames';
 	$lang['strbadconfig'] = 'Your config.inc.php is out of date. You will need to regenerate it from the new config.inc.php-dist.';
-	$lang['strnotloaded'] = 'Your PHP installation does not support PostgreSQL. You need to recompile PHP using the --with-pgsql configure option.';
+	$lang['strlibnotfound'] = 'Your PHP installation does not support the %s module. You will need to install, enable, or compile it to use phpPgAdmin.';
+	$lang['strlibnotfound_plural'] = 'Your PHP installation does not support the %s modules. You will need to install, enable, or compile them to use phpPgAdmin.';
 	$lang['strpostgresqlversionnotsupported'] = 'Version of PostgreSQL not supported. Please upgrade to version %s or later.';
 	$lang['strbadschema'] = 'Invalid schema specified.';
 	$lang['strbadencoding'] = 'Failed to set client encoding in database.';
@@ -194,7 +195,7 @@
 	$lang['strimporterrorline-badcolumnnum'] = 'Import error on line %s: Line does not possess the correct number of columns.';
 	$lang['strimporterror-uploadedfile'] = 'Import error: File could not be uploaded to the server';
 	$lang['strcannotdumponwindows'] = 'Dumping of complex table and schema names on Windows is not supported.';
-	$lang['strinvalidserverparam'] = 'Attempt to connect with invalid server parameter, possibly someone is trying to hack your system.';
+	$lang['strinvalidserverparam'] = 'Attempt to connect with invalid server parameter, possibly someone is trying to hack your system.'; 
 	$lang['strnoserversupplied'] = 'No server supplied!';
 	$lang['strbadpgdumppath'] = 'Export error: Failed to execute pg_dump (given path in your conf/config.inc.php : %s). Please, fix this path in your configuration and relog.';
 	$lang['strbadpgdumpallpath'] = 'Export error: Failed to execute pg_dumpall (given path in your conf/config.inc.php : %s). Please, fix this path in your configuration and relog.';
@@ -212,7 +213,6 @@
 	$lang['strcreatelikewithdefaults'] = 'INCLUDE DEFAULTS';
 	$lang['strcreatelikewithconstraints'] = 'INCLUDE CONSTRAINTS';
 	$lang['strcreatelikewithindexes'] = 'INCLUDE INDEXES';
-	$lang['strcreatelikewithcomments'] = 'INCLUDE COMMENTS';
 	$lang['strtablename'] = 'Table name';
 	$lang['strtableneedsname'] = 'You must give a name for your table.';
 	$lang['strtablelikeneedslike'] = 'You must give a table to copy properties from.';
@@ -314,7 +314,7 @@
 	$lang['strcreategroup'] = 'Create group';
 	$lang['strgroupneedsname'] = 'You must give a name for your group.';
 	$lang['strgroupcreated'] = 'Group created.';
-	$lang['strgroupcreatedbad'] = 'Group creation failed.';
+	$lang['strgroupcreatedbad'] = 'Group creation failed.';	
 	$lang['strconfdropgroup'] = 'Are you sure you want to drop the group "%s"?';
 	$lang['strgroupdropped'] = 'Group dropped.';
 	$lang['strgroupdroppedbad'] = 'Group drop failed.';
@@ -807,6 +807,7 @@
 	$lang['strloading'] = 'Loading...';
 	$lang['strerrorloading'] = 'Error Loading';
 	$lang['strclicktoreload'] = 'Click to reload';
+	$lang['sessionsecuritywarning'] = 'You are running phpPgAdmin with session security disabled. This is a potential security risk!';
 
 	// Autovacuum
 	$lang['strautovacuum'] = 'Autovacuum';
@@ -903,5 +904,3 @@
 	$lang['strpluginnotfound'] = 'Error: plugin \'%s\' not found. Check if this plugin exists in the plugins/ directory, or if this plugins has a plugin.php file. Plugin\'s names are case sensitive';
 	$lang['stractionnotfound'] = 'Error: action \'%s\' not found in the \'%s\' plugin, or it was not specified as an action.';
 	$lang['strhooknotfound'] = 'Error: hook \'%s\' is not avaliable.';
-
-?>

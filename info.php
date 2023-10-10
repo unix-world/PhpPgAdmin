@@ -33,9 +33,9 @@
 		$tablestatsio = $data->getStatsTableIO($_REQUEST['table']);
 		$indexstatstups = $data->getStatsIndexTuples($_REQUEST['table']);
 		$indexstatsio = $data->getStatsIndexIO($_REQUEST['table']);
-
+        
 		// Check that there is some info
-		if (($referrers === -99 || ($referrers !== -99 && $referrers->recordCount() == 0))
+		if (($referrers === -99 || ($referrers !== -99 && $referrers->recordCount() == 0)) 
 				&& $parents->recordCount() == 0 && $children->recordCount() == 0
 				&& ($tablestatstups->recordCount() == 0 && $tablestatsio->recordCount() == 0
 				&& $indexstatstups->recordCount() == 0 && $indexstatsio->recordCount() == 0)) {
@@ -85,7 +85,7 @@
 
 				$misc->printTable($referrers, $columns, $actions, 'info-referrers', $lang['strnodata']);
 			}
-
+			
 			// Parent tables
 			if ($parents->recordCount() > 0) {
 				echo "<h3>{$lang['strparenttables']}</h3>\n";
@@ -121,7 +121,7 @@
 
 				$misc->printTable($parents, $columns, $actions, 'info-parents', $lang['strnodata']);
 			}
-
+	
 			// Child tables
 			if ($children->recordCount() > 0) {
 				echo "<h3>{$lang['strchildtables']}</h3>\n";
@@ -139,7 +139,7 @@
 						'title' => $lang['stractions'],
 					)
 				);
-
+				
 				$actions = array (
 					'properties' => array (
 						'content' => $lang['strproperties'],
@@ -154,7 +154,7 @@
 						)
 					)
 				);
-
+				
 				$misc->printTable($children, $columns, $actions, 'info-children', $lang['strnodata']);
 
 			}
@@ -179,7 +179,7 @@
 				echo "\t\t<th class=\"data\">{$lang['strdelete']}</th>\n";
 				echo "\t</tr>\n";
 				$i = 0;
-
+				
 				while (!$tablestatstups->EOF) {
 					$id = ( ($i % 2 ) == 0 ? '1' : '2' );
 					echo "\t<tr class=\"data{$id}\">\n";
@@ -194,7 +194,7 @@
 					$tablestatstups->movenext();
 					$i++;
 				}
-
+	
 				echo "</table>\n";
 			}
 
@@ -224,7 +224,7 @@
 				echo "\t\t<th class=\"data\">{$lang['strpercent']}</th>\n";
 				echo "\t</tr>\n";
 				$i = 0;
-
+				
 				while (!$tablestatsio->EOF) {
 					$id = ( ($i % 2 ) == 0 ? '1' : '2' );
 					echo "\t<tr class=\"data{$id}\">\n";
@@ -260,7 +260,7 @@
 					$tablestatsio->movenext();
 					$i++;
 				}
-
+	
 				echo "</table>\n";
 			}
 
@@ -276,7 +276,7 @@
 				echo "\t\t<th class=\"data\">{$lang['strfetch']}</th>\n";
 				echo "\t</tr>\n";
 				$i = 0;
-
+				
 				while (!$indexstatstups->EOF) {
 					$id = ( ($i % 2 ) == 0 ? '1' : '2' );
 					echo "\t<tr class=\"data{$id}\">\n";
@@ -288,7 +288,7 @@
 					$indexstatstups->movenext();
 					$i++;
 				}
-
+	
 				echo "</table>\n";
 			}
 
@@ -304,7 +304,7 @@
 				echo "\t\t<th class=\"data\">{$lang['strpercent']}</th>\n";
 				echo "\t</tr>\n";
 				$i = 0;
-
+				
 				while (!$indexstatsio->EOF) {
 					$id = ( ($i % 2 ) == 0 ? '1' : '2' );
 					echo "\t<tr class=\"data{$id}\">\n";
@@ -319,7 +319,7 @@
 					$indexstatsio->movenext();
 					$i++;
 				}
-
+	
 				echo "</table>\n";
 			}
 		}
@@ -327,13 +327,13 @@
 
 	$misc->printHeader($lang['strtables'] . ' - ' . $_REQUEST['table'] . ' - ' . $lang['strinfo']);
 	$misc->printBody();
-
+	
 	switch ($action) {
 		default:
 			doDefault();
 			break;
 	}
-
+	
 	$misc->printFooter();
 
 ?>

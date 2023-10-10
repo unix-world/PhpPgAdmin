@@ -10,12 +10,14 @@
 	include_once('./libraries/lib.inc.php');
 
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
-	if (isset($_REQUEST['table']))
+
+	if (isset($_REQUEST['table'])) {
 		$tableName =& $_REQUEST['table'];
-	elseif (isset($_REQUEST['view']))
+	} else if (isset($_REQUEST['view'])) {
 		$tableName =& $_REQUEST['view'];
-	else
+	} else {
 		die($lang['strnotableprovided']);
+	}
 
 	/**
 	 * Displays a screen where they can alter a column
@@ -69,9 +71,10 @@
 					// XXX: HACKY
 					if ($column->fields['type'] != $column->fields['base_type'] && preg_match('/\\(([0-9, ]*)\\)/', $column->fields['type'], $bits)) {
 						$_REQUEST['length'] = $bits[1];
-					}
-					else
+					} else {
 						$_REQUEST['length'] = '';
+					}
+
 					$_REQUEST['default'] = $_REQUEST['olddefault'] = $column->fields['adsrc'];
 					if ($column->fields['attnotnull']) $_REQUEST['notnull'] = 'YES';
 					$_REQUEST['comment'] = $column->fields['comment'];
@@ -117,9 +120,9 @@
 
 				echo "<td><input type=\"checkbox\" name=\"notnull\"", (isset($_REQUEST['notnull'])) ? ' checked="checked"' : '', " /></td>\n";
 				echo "<td><input name=\"default\" size=\"20\" value=\"",
-					htmlspecialchars($_REQUEST['default']), "\" /></td>\n";
+					htmlspecialchars($_REQUEST['default'] ?? ''), "\" /></td>\n";
 				echo "<td><input name=\"comment\" size=\"40\" value=\"",
-					htmlspecialchars($_REQUEST['comment']), "\" /></td></tr>\n";
+					htmlspecialchars($_REQUEST['comment'] ?? ''), "\" /></td></tr>\n";
 				echo "</table>\n";
 				echo "<p><input type=\"hidden\" name=\"action\" value=\"properties\" />\n";
 				echo "<input type=\"hidden\" name=\"stage\" value=\"2\" />\n";
@@ -183,13 +186,14 @@
 			$rowdata->fields['+type'] = $data->formatType($rowdata->fields['type'], $rowdata->fields['atttypmod']);
 		}
 
-		if (empty($_REQUEST['column']))
+		if (empty($_REQUEST['column'])) {
 			$msg.= "<br/>{$lang['strnoobjects']}";
+		}
 
-			$misc->printTrail('column');
-			//$misc->printTitle($lang['strcolprop']);
-			$misc->printTabs('column','properties');
-			$misc->printMsg($msg);
+		$misc->printTrail('column');
+		//$misc->printTitle($lang['strcolprop']);
+		$misc->printTabs('column','properties');
+		$misc->printMsg($msg);
 
 		if (! empty($_REQUEST['column'])) {
 			// Get table
@@ -342,5 +346,3 @@
 		}
 
 	$misc->printFooter();
-
-?>

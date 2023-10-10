@@ -8,7 +8,7 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 
@@ -25,15 +25,15 @@
 		if (!isset($_REQUEST['username'])) $_REQUEST['username'] = array();
 		if (!isset($_REQUEST['groupname'])) $_REQUEST['groupname'] = array();
 		if (!isset($_REQUEST['privilege'])) $_REQUEST['privilege'] = array();
-
+	
 		if ($confirm) {
 			// Get users from the database
 			$users = $data->getUsers();
 			// Get groups from the database
 			$groups = $data->getGroups();
-
+		
 			$misc->printTrail($_REQUEST['subject']);
-
+			
 			switch ($mode) {
 				case 'grant':
 					$misc->printTitle($lang['strgrant'],'pg.privilege.grant');
@@ -43,7 +43,7 @@
 					break;
 			}
 			$misc->printMsg($msg);
-
+			
 			echo "<form action=\"privileges.php\" method=\"post\">\n";
 			echo "<table>\n";
 			echo "<tr><th class=\"data left\">{$lang['strusers']}</th>\n";
@@ -74,7 +74,7 @@
 			echo "<td class=\"data1\">\n";
 			foreach ($data->privlist[$_REQUEST['subject']] as $v) {
 				$v = htmlspecialchars($v);
-				echo "<input type=\"checkbox\" id=\"privilege[$v]\" name=\"privilege[$v]\"",
+				echo "<input type=\"checkbox\" id=\"privilege[$v]\" name=\"privilege[$v]\"", 
 							isset($_REQUEST['privilege'][$v]) ? ' checked="checked"' : '', " /><label for=\"privilege[$v]\">{$v}</label><br />\n";
 			}
 			echo "</td></tr>\n";
@@ -83,13 +83,13 @@
 				echo "<tr><th class=\"data left\">{$lang['stroptions']}</th>\n";
 				echo "<td class=\"data1\">\n";
 				if ($mode == 'grant') {
-					echo "<input type=\"checkbox\" id=\"grantoption\" name=\"grantoption\"",
+					echo "<input type=\"checkbox\" id=\"grantoption\" name=\"grantoption\"", 
 								isset($_REQUEST['grantoption']) ? ' checked="checked"' : '', " /><label for=\"grantoption\">GRANT OPTION</label>\n";
 				}
 				elseif ($mode == 'revoke') {
-					echo "<input type=\"checkbox\" id=\"grantoption\" name=\"grantoption\"",
+					echo "<input type=\"checkbox\" id=\"grantoption\" name=\"grantoption\"", 
 								isset($_REQUEST['grantoption']) ? ' checked="checked"' : '', " /><label for=\"grantoption\">GRANT OPTION FOR</label><br />\n";
-					echo "<input type=\"checkbox\" id=\"cascade\" name=\"cascade\"",
+					echo "<input type=\"checkbox\" id=\"cascade\" name=\"cascade\"", 
 								isset($_REQUEST['cascade']) ? ' checked="checked"' : '', " /><label for=\"cascade\">CASCADE</label><br />\n";
 				}
 				echo "</td></tr>\n";
@@ -145,7 +145,7 @@
 		global $lang;
 
 		$misc->printTrail($_REQUEST['subject']);
-
+		
 		# @@@FIXME: This switch is just a temporary solution,
 		# need a better way, maybe every type of object should
 		# have a tab bar???
@@ -168,7 +168,7 @@
 			$object = $_REQUEST[$_REQUEST['subject'].'_oid'];
 		else
 			$object = $_REQUEST[$_REQUEST['subject']];
-
+		
 		// Get the privileges on the object, given its type
 		if ($_REQUEST['subject'] == 'column')
 			$privileges = $data->getPrivileges($object, 'column', $_REQUEST['table']);
@@ -224,7 +224,7 @@
 		else {
 			echo "<p>{$lang['strnoprivileges']}</p>\n";
 		}
-
+		
 		// Links for granting to a user or group
 		switch ($_REQUEST['subject']) {
 			case 'table':
@@ -250,7 +250,7 @@
 
 		$subject = $_REQUEST['subject'];
 		$object = $_REQUEST[$_REQUEST['subject']];
-
+		
 		if ($_REQUEST['subject'] == 'function') {
 			$objectoid = $_REQUEST[$_REQUEST['subject'].'_oid'];
 			$urlvars = array (
@@ -347,8 +347,8 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
-
+	
 ?>

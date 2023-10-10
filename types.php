@@ -8,7 +8,7 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 
@@ -25,18 +25,18 @@
 		$misc->printTrail('type');
 		$misc->printTitle($lang['strproperties'], 'pg.type');
 		$misc->printMsg($msg);
-
+		
 		function attPre(&$rowdata) {
 			global $data;
 			$rowdata->fields['+type'] = $data->formatType($rowdata->fields['type'], $rowdata->fields['atttypmod']);
 		}
-
+		
 		if ($typedata->recordCount() > 0) {
 			$vals = false;
 			switch ($typedata->fields['typtype']) {
 			case 'c':
 				$attrs = $data->getTableAttributes($_REQUEST['type']);
-
+				
 				$columns = array(
 					'field' => array(
 						'title' => $lang['strfield'],
@@ -51,11 +51,11 @@
 						'field' => field('comment'),
 					)
 				);
-
+				
 				$actions = array();
-
+				
 				$misc->printTable($attrs, $columns, $actions, 'types-properties', null, 'attPre');
-
+				
 				break;
 			case 'e':
 				$vals = $data->getEnumValues($typedata->fields['typname']);
@@ -101,7 +101,7 @@
 		} else
 			doDefault($lang['strinvalidparam']);
 	}
-
+	
 	/**
 	 * Show confirmation of drop and perform actual drop
 	 */
@@ -131,7 +131,7 @@
 			else
 				doDefault($lang['strtypedroppedbad']);
 		}
-
+		
 	}
 
 	/**
@@ -151,18 +151,18 @@
 				$misc->printTrail('type');
 				$misc->printTitle($lang['strcreatecomptype'], 'pg.type.create');
 				$misc->printMsg($msg);
-
+				
 				echo "<form action=\"types.php\" method=\"post\">\n";
 				echo "<table>\n";
 				echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strname']}</th>\n";
-				echo "\t\t<td class=\"data\"><input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+				echo "\t\t<td class=\"data\"><input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 					htmlspecialchars($_REQUEST['name']), "\" /></td>\n\t</tr>\n";
 				echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strnumfields']}</th>\n";
-				echo "\t\t<td class=\"data\"><input name=\"fields\" size=\"5\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+				echo "\t\t<td class=\"data\"><input name=\"fields\" size=\"5\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 					htmlspecialchars($_REQUEST['fields']), "\" /></td>\n\t</tr>\n";
 
 				echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strcomment']}</th>\n";
-				echo "\t\t<td><textarea name=\"typcomment\" rows=\"3\" cols=\"32\">",
+				echo "\t\t<td><textarea name=\"typcomment\" rows=\"3\" cols=\"32\">", 
 					htmlspecialchars($_REQUEST['typcomment']), "</textarea></td>\n\t</tr>\n";
 
 				echo "</table>\n";
@@ -201,7 +201,7 @@
 				echo "<table>\n";
 				echo "\t<tr><th colspan=\"2\" class=\"data required\">{$lang['strfield']}</th><th colspan=\"2\" class=\"data required\">{$lang['strtype']}</th>";
 				echo"<th class=\"data\">{$lang['strlength']}</th><th class=\"data\">{$lang['strcomment']}</th></tr>\n";
-
+				
 				for ($i = 0; $i < $_REQUEST['fields']; $i++) {
 					if (!isset($_REQUEST['field'][$i])) $_REQUEST['field'][$i] = '';
 					if (!isset($_REQUEST['length'][$i])) $_REQUEST['length'][$i] = '';
@@ -220,18 +220,18 @@
 						$types->moveNext();
 					}
 					echo "\t\t\t</select>\n\t\t</td>\n";
-
+					
 					// Output array type selector
 					echo "\t\t<td>\n\t\t\t<select name=\"array[{$i}]\">\n";
 					echo "\t\t\t\t<option value=\"\"", (isset($_REQUEST['array'][$i]) && $_REQUEST['array'][$i] == '') ? ' selected="selected"' : '', "></option>\n";
 					echo "\t\t\t\t<option value=\"[]\"", (isset($_REQUEST['array'][$i]) && $_REQUEST['array'][$i] == '[]') ? ' selected="selected"' : '', ">[ ]</option>\n";
 					echo "\t\t\t</select>\n\t\t</td>\n";
-
-					echo "\t\t<td><input name=\"length[{$i}]\" size=\"10\" value=\"",
+					
+					echo "\t\t<td><input name=\"length[{$i}]\" size=\"10\" value=\"", 
 						htmlspecialchars($_REQUEST['length'][$i]), "\" /></td>\n";
-					echo "\t\t<td><input name=\"colcomment[{$i}]\" size=\"40\" value=\"",
+					echo "\t\t<td><input name=\"colcomment[{$i}]\" size=\"40\" value=\"", 
 						htmlspecialchars($_REQUEST['colcomment'][$i]), "\" /></td>\n\t</tr>\n";
-				}
+				}	
 				echo "</table>\n";
 				echo "<p><input type=\"hidden\" name=\"action\" value=\"create_comp\" />\n";
 				echo "<input type=\"hidden\" name=\"stage\" value=\"3\" />\n";
@@ -242,7 +242,7 @@
 				echo "<input type=\"submit\" value=\"{$lang['strcreate']}\" />\n";
 				echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 				echo "</form>\n";
-
+								
 				break;
 			case 3:
 				global $data, $lang;
@@ -256,12 +256,12 @@
 				}
 				elseif ($fields == '' || !is_numeric($fields) || $fields != (int)$fields || $fields <= 0)  {
 					$_REQUEST['stage'] = 1;
-					doCreateComposite($lang['strtypeneedscols']);
+					doCreateComposite($lang['strtypeneedscols']);	
 					return;
 				}
-
+				
 				$status = $data->createCompositeType($_REQUEST['name'], $_REQUEST['fields'], $_REQUEST['field'],
-								$_REQUEST['type'], $_REQUEST['array'], $_REQUEST['length'], $_REQUEST['colcomment'],
+								$_REQUEST['type'], $_REQUEST['array'], $_REQUEST['length'], $_REQUEST['colcomment'], 
 								$_REQUEST['typcomment']);
 
 				if ($status == 0)
@@ -299,18 +299,18 @@
 				$misc->printTrail('type');
 				$misc->printTitle($lang['strcreateenumtype'], 'pg.type.create');
 				$misc->printMsg($msg);
-
+				
 				echo "<form action=\"types.php\" method=\"post\">\n";
 				echo "<table>\n";
 				echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strname']}</th>\n";
-				echo "\t\t<td class=\"data\"><input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+				echo "\t\t<td class=\"data\"><input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 					htmlspecialchars($_REQUEST['name']), "\" /></td>\n\t</tr>\n";
 				echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strnumvalues']}</th>\n";
-				echo "\t\t<td class=\"data\"><input name=\"values\" size=\"5\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+				echo "\t\t<td class=\"data\"><input name=\"values\" size=\"5\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 					htmlspecialchars($_REQUEST['values']), "\" /></td>\n\t</tr>\n";
 
 				echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strcomment']}</th>\n";
-				echo "\t\t<td><textarea name=\"typcomment\" rows=\"3\" cols=\"32\">",
+				echo "\t\t<td><textarea name=\"typcomment\" rows=\"3\" cols=\"32\">", 
 					htmlspecialchars($_REQUEST['typcomment']), "</textarea></td>\n\t</tr>\n";
 
 				echo "</table>\n";
@@ -346,14 +346,14 @@
 				// Output table header
 				echo "<table>\n";
 				echo "\t<tr><th colspan=\"2\" class=\"data required\">{$lang['strvalue']}</th></tr>\n";
-
+				
 				for ($i = 0; $i < $_REQUEST['values']; $i++) {
 					if (!isset($_REQUEST['value'][$i])) $_REQUEST['value'][$i] = '';
 
 					echo "\t<tr>\n\t\t<td>", $i + 1, ".&nbsp;</td>\n";
 					echo "\t\t<td><input name=\"value[{$i}]\" size=\"16\" maxlength=\"{$data->_maxNameLen}\" value=\"",
 						htmlspecialchars($_REQUEST['value'][$i]), "\" /></td>\n\t</tr>\n";
-				}
+				}	
 				echo "</table>\n";
 				echo "<p><input type=\"hidden\" name=\"action\" value=\"create_enum\" />\n";
 				echo "<input type=\"hidden\" name=\"stage\" value=\"3\" />\n";
@@ -378,7 +378,7 @@
 				}
 				elseif ($values == '' || !is_numeric($values) || $values != (int)$values || $values <= 0)  {
 					$_REQUEST['stage'] = 1;
-					doCreateEnum($lang['strtypeneedsvals']);
+					doCreateEnum($lang['strtypeneedsvals']);	
 					return;
 				}
 
@@ -471,7 +471,7 @@
 		echo "<td class=\"data1\"><input name=\"typdelim\" size=\"1\" maxlength=\"1\" value=\"",
 			htmlspecialchars($_POST['typdelim']), "\" /></td></tr>";
 		echo "<tr><th class=\"data left\"><label for=\"typbyval\">{$lang['strpassbyval']}</label></th>\n";
-		echo "<td class=\"data1\"><input type=\"checkbox\" id=\"typbyval\" name=\"typbyval\"",
+		echo "<td class=\"data1\"><input type=\"checkbox\" id=\"typbyval\" name=\"typbyval\"", 
 			isset($_POST['typbyval']) ? ' checked="checked"' : '', " /></td></tr>";
 		echo "<tr><th class=\"data left\">{$lang['stralignment']}</th>\n";
 		echo "<td class=\"data1\"><select name=\"typalign\">";
@@ -494,7 +494,7 @@
 		echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 		echo "</form>\n";
 	}
-
+	
 	/**
 	 * Actually creates the new type in the database
 	 */
@@ -507,7 +507,7 @@
 		// which might be unwise...
 		if ($_POST['typname'] == '') doCreate($lang['strtypeneedsname']);
 		elseif ($_POST['typlen'] == '') doCreate($lang['strtypeneedslen']);
-		else {
+		else {		 
 			$status = $data->createType(
 				$_POST['typname'],
 				$_POST['typin'],
@@ -525,7 +525,7 @@
 			else
 				doCreate($lang['strtypecreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * Show default list of types in the database
@@ -537,7 +537,7 @@
 		$misc->printTrail('schema');
 		$misc->printTabs('schema','types');
 		$misc->printMsg($msg);
-
+		
 		$types = $data->getTypes();
 
 		$columns = array(
@@ -574,7 +574,7 @@
 				'field' => field('typcomment'),
 			),
 		);
-
+		
 		if (!isset($types->fields['typtype'])) unset($columns['flavour']);
 
 		$actions = array(
@@ -591,7 +591,7 @@
 				)
 			),
 		);
-
+		
 		$misc->printTable($types, $columns, $actions, 'types-types', $lang['strnotypes']);
 
 		$navlinks = array (
@@ -645,17 +645,17 @@
 
 		$misc->printNavLinks($navlinks, 'types-types', get_defined_vars());
 	}
-
+	
 	/**
 	 * Generate XML for the browser tree.
 	 */
 	function doTree() {
 		global $misc, $data;
-
+		
 		$types = $data->getTypes();
-
+		
 		$reqvars = $misc->getRequestVars('type');
-
+		
 		$attrs = array(
 			'text'   => field('typname'),
 			'icon'   => 'Type',
@@ -668,13 +668,13 @@
 							)
 						)
 		);
-
+		
 		$misc->printTree($types, $attrs, 'types');
 		exit;
 	}
-
+	
 	if ($action == 'tree') doTree();
-
+	
 	$misc->printHeader($lang['strtypes']);
 	$misc->printBody();
 
@@ -700,14 +700,14 @@
 			break;
 		case 'confirm_drop':
 			doDrop(true);
-			break;
+			break;			
 		case 'properties':
 			doProperties();
 			break;
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

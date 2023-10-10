@@ -9,10 +9,10 @@
 	// Include application functions
 	$_no_db_connection = true;
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
-
+	
 	function doLogout() {
 		global $misc, $lang, $_reload_browser, $plugin_manager;
 
@@ -31,11 +31,11 @@
 	function doDefault($msg = '') {
 		global $conf, $misc;
 		global $lang;
-
+		
 		$misc->printTabs('root','servers');
 		$misc->printMsg($msg);
 		$group = isset($_GET['group']) ? $_GET['group'] : false;
-
+		
 		$groups = $misc->getServersGroups(true,$group);
 
 		$columns = array(
@@ -55,12 +55,12 @@
 		$misc->printTable($groups, $columns, $actions,'servers-servers');
 
 		$servers = $misc->getServers(true, $group);
-
+		
 		function svPre(&$rowdata, $actions) {
 			$actions['logout']['disable'] = empty($rowdata->fields['username']);
 			return $actions;
 		}
-
+		
 		$columns = array(
 			'server' => array(
 				'title' => $lang['strserver'],
@@ -84,7 +84,7 @@
 				'title' => $lang['stractions'],
 			),
 		);
-
+		
 		$actions = array(
 			'logout' => array(
 				'content' => $lang['strlogout'],
@@ -107,7 +107,7 @@
 
 		$misc->printTable($servers, $columns, $actions, 'servers-servers', $lang['strnoobjects'], 'svPre');
 	}
-
+	
 	function doTree() {
 		global $misc, $conf;
 
@@ -132,24 +132,24 @@
 		else {
 			$nodes = $misc->getServers(true, false);
 		}
-
+		
 		$reqvars = $misc->getRequestVars('server');
-
+		
 		$attrs = array(
 			'text'   => field('desc'),
-
+			
 			// Show different icons for logged in/out
 			'icon'   => field('icon'),
-
+			
 			'toolTip'=> field('id'),
-
+			
 			'action' => field('action'),
 
 			// Only create a branch url if the user has
 			// logged into the server.
 			'branch' => field('branch'),
 		);
-
+		
 		$misc->printTree($nodes, $attrs, 'servers');
 		exit;
 	}
@@ -172,5 +172,4 @@
 	}
 
 	$misc->printFooter();
-
 ?>

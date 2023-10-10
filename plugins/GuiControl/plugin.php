@@ -1,5 +1,4 @@
 <?php
-
 require_once('classes/Plugin.php');
 
 class GuiControl extends Plugin {
@@ -22,7 +21,7 @@ class GuiControl extends Plugin {
 
 	/**
 	 * This method returns the functions that will hook in the phpPgAdmin core.
-	 * To do include a function just put in the $hooks array the follwing code:
+	 * To do include a function just put in the $hooks array the following code:
 	 * 'hook' => array('function1', 'function2').
 	 *
 	 * Example:
@@ -48,7 +47,7 @@ class GuiControl extends Plugin {
 
 	/**
 	 * This method returns the functions that will be used as actions.
-	 * To do include a function that will be used as action, just put in the $actions array the follwing code:
+	 * To do include a function that will be used as action, just put in the $actions array the following code:
 	 *
 	 * $actions = array(
 	 *	'show_page',
@@ -98,7 +97,7 @@ class GuiControl extends Plugin {
                 unset($tabs[$link]);
         return;
     }
-
+   
 	function filter_trail(&$f_params) {
         if (!isset($this->conf['trail_links']))
             return;
@@ -108,7 +107,7 @@ class GuiControl extends Plugin {
 
         return;
     }
-
+   
 	function filter_navlinks(&$f_params) {
         $place = $f_params['place'];
         $navlinks = &$f_params['navlinks'];
@@ -123,7 +122,7 @@ class GuiControl extends Plugin {
                 unset($navlinks[$link]);
         return;
     }
-
+   
 	function filter_actionbuttons(&$f_params) {
         $place = $f_params['place'];
         $actions = &$f_params['actionbuttons'];
@@ -143,5 +142,4 @@ class GuiControl extends Plugin {
         return;
     }
 }
-
 ?>

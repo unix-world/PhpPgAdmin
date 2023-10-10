@@ -1,5 +1,4 @@
 <?php
-
 require_once('./classes/Plugin.php');
 require_once('./plugins/Report/classes/Reports.php');
 
@@ -60,7 +59,7 @@ class Report extends Plugin {
 
 	/**
 	 * This method returns the functions that will hook in the phpPgAdmin core.
-	 * To do include a function just put in the $hooks array the follwing code:
+	 * To include a function just put in the $hooks array the following code:
 	 * 'hook' => array('function1', 'function2').
 	 *
 	 * Example:
@@ -83,7 +82,7 @@ class Report extends Plugin {
 
 	/**
 	 * This method returns the functions that will be used as actions.
-	 * To do include a function that will be used as action, just put in the $actions array the follwing code:
+	 * To include a function that will be used as action, just put in the $actions array the following code:
 	 *
 	 * $actions = array(
 	 *	'show_page',
@@ -324,7 +323,7 @@ class Report extends Plugin {
 
 	function get_subject_params() {
 		$vars = array();
-
+		
 		if (! isset($_REQUEST['action']))
 			return $vars;
 
@@ -358,8 +357,8 @@ class Report extends Plugin {
 
 		// If it's a first, load then get the data from the database
 		$report = $reportsdb->getReport($_REQUEST['report_id']);
-
-		if ($_REQUEST['action'] == 'edit') {
+		
+		if ($_REQUEST['action'] == 'edit') {			
 			$_POST['report_name'] = $report->fields['report_name'];
 			$_POST['db_name'] = $report->fields['db_name'];
 			$_POST['descr'] = $report->fields['descr'];
@@ -445,7 +444,7 @@ class Report extends Plugin {
 		global $lang;
 
 		$reportsdb = $this->get_reportsdb();
-
+		
 		$misc->printHeader($this->lang['strreports']);
 		$misc->printBody();
 		$misc->printTrail('server');
@@ -478,7 +477,7 @@ class Report extends Plugin {
 		);
 		if (isset($_REQUEST['schema'])) $urlvars['schema'] = $_REQUEST['schema'];
 		if (isset($_REQUEST['schema'])) $urlvars['database'] = $_REQUEST['schema'];
-
+		
 		$navlinks = array (
 			'showall' => array (
 				'attr'=> array (
@@ -535,7 +534,7 @@ class Report extends Plugin {
 		$misc->printTrail('server');
 		$misc->printTabs('server', 'report_plugin');
 		$misc->printMsg($msg);
-
+		
 		if (!isset($_REQUEST['report_name'])) $_REQUEST['report_name'] = '';
 		if (!isset($_REQUEST['db_name'])) $_REQUEST['db_name'] = '';
 		if (!isset($_REQUEST['descr'])) $_REQUEST['descr'] = '';
@@ -562,7 +561,7 @@ class Report extends Plugin {
 			unset($_REQUEST['database']);
 			$misc->setForm();
 		}
-
+		
 		$databases = $data->getDatabases();
 
 		echo "<form action=\"plugin.php?plugin={$this->name}\" method=\"post\">\n";
@@ -639,7 +638,7 @@ class Report extends Plugin {
 
 		$misc->printHeader($this->lang['strreports']);
 		$misc->printBody();
-
+		
 		if (isset($_REQUEST['cancel'])) {
 			$this->default_action();
 			exit;
@@ -679,7 +678,7 @@ class Report extends Plugin {
 		$reportsdb = $this->get_reportsdb();
 
 		$report = $reportsdb->getReport($_REQUEST['report_id']);
-
+		
 		$_POST['query'] = $report->fields['report_sql'];
 
 		include('./sql.php');
@@ -698,7 +697,7 @@ class Report extends Plugin {
 		$misc->printTrail('server');
 		$misc->printTabs('server', 'report_plugin');
 		$misc->printMsg($msg);
-
+		
 		$reports = $reportsdb->getReports();
 
 		$columns = array(
@@ -732,10 +731,10 @@ class Report extends Plugin {
 				'field' => field('descr'),
 			),
 		);
-
+		
 		//$return_url = urlencode("plugin.php?plugin={$this->name}&amp;{$misc->href}");
 		$urlvars = $misc->getRequestVars();
-
+		
 		$actions = array(
 			'run' => array (
 				'content' => $lang['strexecute'],
@@ -784,7 +783,7 @@ class Report extends Plugin {
 				)
 			),
 		);
-
+		
 		$misc->printTable($reports, $columns, $actions, 'reports-reports', $this->lang['strnoreports']);
 
 		$navlinks = array (
@@ -793,7 +792,7 @@ class Report extends Plugin {
 					'href' => array (
 						'url' => 'plugin.php',
 						'urlvars' => array (
-							'plugin' => $this->name,
+							'plugin' => $this->name, 
 							'server' => field('server'),
 							'action' => 'create')
 					)
@@ -805,5 +804,4 @@ class Report extends Plugin {
 		$misc->printFooter();
 	}
 }
-
 ?>

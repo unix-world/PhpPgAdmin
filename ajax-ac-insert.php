@@ -1,5 +1,4 @@
 <?php
-
 	include_once('./libraries/lib.inc.php');
 
 	if(isset($_POST['offset']))
@@ -40,7 +39,7 @@
 				echo '<img src="'. $misc->icon('ForeignKey') .'" alt="[referenced key]" />';
 
 			echo htmlentities($h, ENT_QUOTES, 'UTF-8'), '</th>';
-
+			
 		}
 		echo "</tr>\n";
 		$i=0;
@@ -61,13 +60,13 @@
 			echo "</tr>\n";
 			$i++;
 			$res->moveNext();
-		}
+		}		
 		echo "</table>\n";
 
 		$page_tests='';
 
 		$js = "<script type=\"text/javascript\">\n";
-
+		
 		if ($_POST['offset']) {
 			echo "<a href=\"javascript:void(0)\" id=\"fkprev\">&lt;&lt; Prev</a>";
 			$js.= "fkl_hasprev=true;\n";
@@ -81,7 +80,7 @@
 		}
 		else
 			$js.= "fkl_hasnext=false;\n";
-
+		
 		echo $js ."</script>";
 	}
 	else {
@@ -90,5 +89,4 @@
 		if ($_POST['offset'])
 			echo "<a href=\"javascript:void(0)\" class=\"fkprev\">Prev &lt;&lt;</a>";
 	}
-
 ?>

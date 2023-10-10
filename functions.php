@@ -137,13 +137,13 @@
 						($schema == $_POST['formFuncSchema']) ? ' selected="selected"' : '', ">", htmlspecialchars($schema), "</option>\n";
 					$schemas->moveNext();
 				}
-			    echo "</select>\n";
+				echo "</select>\n";
 			}
 			else echo $fndata->fields['proschema'];
 			echo "</td>\n";
 			echo "<td class=\"data1\">";
 			echo "<input type=\"hidden\" name=\"original_function\" value=\"", htmlspecialchars($fndata->fields['proname']),"\" />\n";
-			echo "<input name=\"formFunction\" style=\"width: 92%\" maxlength=\"{$data->_maxNameLen}\" value=\"", htmlspecialchars($_POST['formFunction']), "\" />";
+			echo "<input name=\"formFunction\" style=\"width: 100%\" maxlength=\"{$data->_maxNameLen}\" value=\"", htmlspecialchars($_POST['formFunction']), "\" />";
 			echo "</td>\n";
 
 			echo "<td class=\"data1\">", $misc->printVal($args), "\n";
@@ -213,10 +213,10 @@
 				echo "</td></tr>\n";
 			}
 
-                        // function owner
-                        if ($data->hasFunctionAlterOwner()) {
-		            $users = $data->getUsers();
-                            echo "<tr><td class=\"data1\" colspan=\"5\">{$lang['strowner']}: <select name=\"formFuncOwn\">";
+			// function owner
+			if ($data->hasFunctionAlterOwner()) {
+				$users = $data->getUsers();
+				echo "<tr><td class=\"data1\" colspan=\"5\">{$lang['strowner']}: <select name=\"formFuncOwn\">";
 				while (!$users->EOF) {
 					$uname = $users->fields['usename'];
 					echo "<option value=\"", htmlspecialchars($uname), "\"",
@@ -224,9 +224,9 @@
 					$users->moveNext();
 				}
 				echo "</select>\n";
-			    echo "<input type=\"hidden\" name=\"original_owner\" value=\"", htmlspecialchars($fndata->fields['proowner']),"\" />\n";
-                            echo "</td></tr>\n";
-                        }
+				echo "<input type=\"hidden\" name=\"original_owner\" value=\"", htmlspecialchars($fndata->fields['proowner']),"\" />\n";
+				echo "</td></tr>\n";
+			}
 			echo "</table>\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"save_edit\" />\n";
 			echo "<input type=\"hidden\" name=\"function\" value=\"", htmlspecialchars($_REQUEST['function']), "\" />\n";
@@ -347,11 +347,12 @@
 				echo "</td></tr>\n";
 			}
 
-                        echo "<tr><td class=\"data1\" colspan=\"5\">{$lang['strowner']}: ", htmlspecialchars($funcdata->fields['proowner']),"\n";
-                        echo "</td></tr>\n";
+			echo "<tr><td class=\"data1\" colspan=\"5\">{$lang['strowner']}: ", htmlspecialchars($funcdata->fields['proowner']),"\n";
+			echo "</td></tr>\n";
 			echo "</table>\n";
+		} else {
+			echo "<p>{$lang['strnodata']}</p>\n";
 		}
-		else echo "<p>{$lang['strnodata']}</p>\n";
 
 		$navlinks = array(
 			'showall' => array (
@@ -425,7 +426,7 @@
 			//If multi drop
 			if (isset($_REQUEST['ma'])) {
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfdropfunction'], $misc->printVal($a['function'])), "</p>\n";
 					echo '<input type="hidden" name="function[]" value="', htmlspecialchars($a['function']), "\" />\n";
 					echo "<input type=\"hidden\" name=\"function_oid[]\" value=\"", htmlspecialchars($a['function_oid']), "\" />\n";
@@ -528,7 +529,7 @@
 			if($types->fields['typname'] == $_POST['formReturns']) {
 				$szSelected = " selected=\"selected\"";
 			}
-			/* this variable is include in the JS code bellow, so we need to ENT_QUOTES */
+			/* this variable is include in the JS code below, so we need to ENT_QUOTES */
 			$szTypes .= "<option value=\"". htmlspecialchars($types->fields['typname'], ENT_QUOTES) ."\"{$szSelected}>";
 			$szTypes .= htmlspecialchars($types->fields['typname'], ENT_QUOTES) ."</option>";
 			$types->moveNext();
@@ -984,14 +985,15 @@
 			'text'    => $proto,
 			'icon'    => 'Function',
 			'toolTip' => field('procomment'),
-			'action'  => url('redirect.php',
-							$reqvars,
-							array(
-								'action' => 'properties',
-								'function' => $proto,
-								'function_oid' => field('prooid')
-							)
-						)
+			'action'  => url(
+				'redirect.php',
+				$reqvars,
+				array(
+					'action' => 'properties',
+					'function' => $proto,
+					'function_oid' => field('prooid')
+				)
+			)
 		);
 
 		$misc->printTree($funcs, $attrs, 'functions');
@@ -1034,5 +1036,3 @@
 	}
 
 	$misc->printFooter();
-
-?>

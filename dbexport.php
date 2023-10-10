@@ -16,7 +16,7 @@
 
 	// Are we doing a cluster-wide dump or just a per-database dump
 	$dumpall = ($_REQUEST['subject'] == 'server');
-
+	
 	// Check that database dumps are enabled.
 	if ($misc->isDumpEnabled($dumpall)) {
 
@@ -74,7 +74,7 @@
 
 		// Build command for executing pg_dump.
 		$cmd = $exe;
-
+		
 		// we are PG 7.4+, so we always have a schema
 		if (isset($_REQUEST['schema'])) {
 			$f_schema = $_REQUEST['schema'];
@@ -86,13 +86,13 @@
 		case 'schema':
 			// This currently works for 8.2+ (due to the orthoganl -t -n issue introduced then)
 			$cmd .= " -n " . $misc->escapeShellArg("\"{$f_schema}\"");
-			break;
+			break; 
 		case 'table':
 		case 'view':
 			$f_object = $_REQUEST[$_REQUEST['subject']];
 			$data->fieldClean($f_object);
 
-			// Starting in 8.2, -n and -t are orthagonal, so we now schema qualify
+			// Starting in 8.2, -n and -t are orthogonal, so we now schema qualify
 			// the table name in the -t argument and quote both identifiers
 			if ( ((float) $version[1]) >= 8.2 ) {
 				$cmd .= " -t " . $misc->escapeShellArg("\"{$f_schema}\".\"{$f_object}\"");
@@ -110,7 +110,7 @@
 		if ($_REQUEST['output'] == 'gzipped' && !$dumpall) {
 			$cmd .= " -Z 9";
 		}
-
+				
 		switch ($_REQUEST['what']) {
 			case 'dataonly':
 				$cmd .= ' -a';

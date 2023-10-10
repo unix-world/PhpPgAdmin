@@ -67,7 +67,7 @@
 					$curr_col_name = $attrs['NAME'];
 					$curr_col_null = isset($attrs['NULL']);
 				}
-				// And we ignore columns in headers and fail in any other context
+				// And we ignore columns in headers and fail in any other context				
 				elseif ($state != 'HEADER') {
 					$data->rollbackTransaction();
 					$misc->printMsg($lang['strimporterror']);
@@ -78,10 +78,10 @@
 				// An unrecognised tag means failure
 				$data->rollbackTransaction();
 				$misc->printMsg($lang['strimporterror']);
-				exit;
+				exit;			
 		}
 	}
-
+	
 	/**
 	 * Close tag handler for XML import feature
 	 */
@@ -104,9 +104,9 @@
 				$fields = array();
 				$vars = array();
 				$nulls = array();
-				$format = array();
+				$format = array();		
 				$types = array();
-				$i = 0;
+				$i = 0;			
 				foreach ($curr_row as $k => $v) {
 					$fields[$i] = $k;
 					// Check for nulls
@@ -152,7 +152,7 @@
 
 		if ($state == 'COLUMN') {
 			$curr_col_val .= $cdata;
-		}
+		} 
 	}
 
 	function loadNULLArray() {
@@ -174,10 +174,10 @@
 
 	// Check that file is specified and is an uploaded file
 	if (isset($_FILES['source']) && is_uploaded_file($_FILES['source']['tmp_name']) && is_readable($_FILES['source']['tmp_name'])) {
-
+		
 		$fd = fopen($_FILES['source']['tmp_name'], 'r');
 		// Check that file was opened successfully
-		if ($fd !== false) {
+		if ($fd !== false) {		
 			$null_array = loadNULLArray();
 			$status = $data->beginTransaction();
 			if ($status != 0) {
@@ -201,7 +201,7 @@
 					default:
 						$data->rollbackTransaction();
 						$misc->printMsg($lang['strimporterror-fileformat']);
-						exit;
+						exit;			
 				}
 			}
 
@@ -232,7 +232,7 @@
 								exit;
 							}
 							$t_fields[$i] = $f;
-
+							
 							// Check for nulls
 							if (determineNull($line[$i], $null_array)) {
 								$nulls[$i] = 'on';
@@ -259,12 +259,12 @@
 					$parser = xml_parser_create();
 					xml_set_element_handler($parser, '_startElement', '_endElement');
 					xml_set_character_data_handler($parser, '_charHandler');
-
+					
 					while (!feof($fd)) {
 						$line = fgets($fd, 4096);
 						xml_parse($parser, $line);
 					}
-
+					
 					xml_parser_free($parser);
 					break;
 				default:
@@ -273,7 +273,7 @@
 					$misc->printMsg($lang['strinvalidparam']);
 					exit;
 			}
-
+	
 			$status = $data->endTransaction();
 			if ($status != 0) {
 				$misc->printMsg($lang['strimporterror']);
@@ -292,7 +292,7 @@
 		// Upload went wrong
 		$misc->printMsg($lang['strimporterror-uploadedfile']);
 	}
-
+	
 	$misc->printFooter();
 
 ?>

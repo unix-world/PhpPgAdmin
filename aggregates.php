@@ -8,7 +8,7 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 
@@ -36,9 +36,9 @@
 			return;
 		}
 
-		$status = $data->createAggregate($_REQUEST['name'], $_REQUEST['basetype'], $_REQUEST['sfunc'], $_REQUEST['stype'],
+		$status = $data->createAggregate($_REQUEST['name'], $_REQUEST['basetype'], $_REQUEST['sfunc'], $_REQUEST['stype'], 
 		$_REQUEST['ffunc'], $_REQUEST['initcond'], $_REQUEST['sortop'], $_REQUEST['aggrcomment']);
-
+			
 		if ($status == 0) {
 			$_reload_browser = true;
 			doDefault($lang['straggrcreated']);
@@ -46,7 +46,7 @@
 		else {
 			doCreate($lang['straggrcreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * Displays a screen for create a new aggregate function
@@ -67,32 +67,32 @@
 		$misc->printTrail('schema');
 		$misc->printTitle($lang['strcreateaggregate'], 'pg.aggregate.create');
 		$misc->printMsg($msg);
-
+				
 		echo "<form action=\"aggregates.php\" method=\"post\">\n";
 		echo "<table>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strname']}</th>\n";
-		echo "\t\t<td class=\"data\"><input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t\t<td class=\"data\"><input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['name']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['straggrbasetype']}</th>\n";
-		echo "\t\t<td class=\"data\"><input name=\"basetype\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t\t<td class=\"data\"><input name=\"basetype\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['basetype']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['straggrsfunc']}</th>\n";
-		echo "\t\t<td class=\"data\"><input name=\"sfunc\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t\t<td class=\"data\"><input name=\"sfunc\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['sfunc']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['straggrstype']}</th>\n";
-		echo "\t\t<td class=\"data\"><input name=\"stype\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t\t<td class=\"data\"><input name=\"stype\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['stype']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['straggrffunc']}</th>\n";
-		echo "\t\t<td class=\"data\"><input name=\"ffunc\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t\t<td class=\"data\"><input name=\"ffunc\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['ffunc']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['straggrinitcond']}</th>\n";
-		echo "\t\t<td class=\"data\"><input name=\"initcond\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t\t<td class=\"data\"><input name=\"initcond\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['initcond']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['straggrsortop']}</th>\n";
-		echo "\t\t<td class=\"data\"><input name=\"sortop\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t\t<td class=\"data\"><input name=\"sortop\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['sortop']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strcomment']}</th>\n";
-		echo "\t\t<td><textarea name=\"aggrcomment\" rows=\"3\" cols=\"32\">",
+		echo "\t\t<td><textarea name=\"aggrcomment\" rows=\"3\" cols=\"32\">", 
 			htmlspecialchars($_REQUEST['aggrcomment']), "</textarea></td>\n\t</tr>\n";
 
 		echo "</table>\n";
@@ -103,8 +103,8 @@
 		echo "</form>\n";
 	}
 
-	/**
-	 * Function to save after altering an aggregate
+	/** 
+	 * Function to save after altering an aggregate 
 	 */
 	function doSaveAlter() {
 		global $data, $lang;
@@ -114,9 +114,9 @@
  			doAlter($lang['straggrneedsname']);
  			return;
  		}
-
-		$status = $data->alterAggregate($_REQUEST['aggrname'], $_REQUEST['aggrtype'], $_REQUEST['aggrowner'],
-			$_REQUEST['aggrschema'], $_REQUEST['aggrcomment'], $_REQUEST['newaggrname'], $_REQUEST['newaggrowner'],
+ 
+		$status = $data->alterAggregate($_REQUEST['aggrname'], $_REQUEST['aggrtype'], $_REQUEST['aggrowner'], 
+			$_REQUEST['aggrschema'], $_REQUEST['aggrcomment'], $_REQUEST['newaggrname'], $_REQUEST['newaggrowner'], 
 			$_REQUEST['newaggrschema'], $_REQUEST['newaggrcomment']);
 		if ($status == 0)
 			doDefault($lang['straggraltered']);
@@ -152,7 +152,7 @@
 			echo "<td><input name=\"newaggrowner\" size=\"32\" maxlength=\"32\" value=\"", htmlspecialchars($aggrdata->fields['usename']), "\" /></td>";
 			echo "<td><input name=\"newaggrschema\" size=\"32\" maxlength=\"32\" value=\"", htmlspecialchars($_REQUEST['schema']), "\" /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strcomment']}</th>\n";
-			echo "\t\t<td><textarea name=\"newaggrcomment\" rows=\"3\" cols=\"32\">",
+			echo "\t\t<td><textarea name=\"newaggrcomment\" rows=\"3\" cols=\"32\">", 
 				htmlspecialchars($aggrdata->fields['aggrcomment']), "</textarea></td>\n\t</tr>\n";
 			echo "</table>\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"save_alter\" />\n";
@@ -167,8 +167,8 @@
 		} else {
 			echo "<p>{$lang['strnodata']}</p>\n";
 			echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strback']}\" /></p>\n";
-		}
-		echo "</form>\n";
+		}	
+		echo "</form>\n";						
 	}
 
 	/**
@@ -305,13 +305,13 @@
 	 * Show default list of aggregate functions in the database
 	 */
 	function doDefault($msg = '') {
-		global $data, $conf, $misc;
+		global $data, $conf, $misc;	
 		global $lang;
 
 		$misc->printTrail('schema');
 		$misc->printTabs('schema', 'aggregates');
 		$misc->printMsg($msg);
-
+		
 		$aggregates = $data->getAggregates();
 
 		$columns = array(
@@ -328,20 +328,20 @@
 			'aggrtransfn' => array(
 				'title' => $lang['straggrsfunc'],
 				'field' => field('aggtransfn'),
-			),
+			),			
 			'owner' => array(
 				'title' => $lang['strowner'],
 				'field' => field('usename'),
-			),
+			),			
 			'actions' => array(
 				'title' => $lang['stractions'],
-			),
+			),			
 			'comment' => array(
 				'title' => $lang['strcomment'],
 				'field' => field('aggrcomment'),
 			),
 		);
-
+		
 		$actions = array(
 			'alter' => array(
 				'content' => $lang['stralter'],
@@ -398,12 +398,12 @@
 	 */
 	function doTree() {
 		global $misc, $data;
-
+		
 		$aggregates = $data->getAggregates();
 
 		$proto = concat(field('proname'), ' (', field('proargtypes'), ')');
 		$reqvars = $misc->getRequestVars('aggregate');
-
+		
 		$attrs = array(
 			'text'    => $proto,
 			'icon'    => 'Aggregate',
@@ -417,13 +417,13 @@
 				)
 			)
 		);
-
+		
 		$misc->printTree($aggregates, $attrs, 'aggregates');
 		exit;
 	}
-
+	
 	if ($action == 'tree') doTree();
-
+	
 	$misc->printHeader($lang['straggregates']);
 	$misc->printBody();
 

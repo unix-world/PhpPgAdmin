@@ -8,7 +8,7 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 
@@ -22,7 +22,7 @@
 		$misc->printTrail('operator');
 		$misc->printTitle($lang['strproperties'],'pg.operator');
 		$misc->printMsg($msg);
-
+		
 		$oprdata = $data->getOperator($_REQUEST['operator_oid']);
 		$oprdata->fields['oprcanhash'] = $data->phpBool($oprdata->fields['oprcanhash']);
 
@@ -94,9 +94,9 @@
 		if ($confirm) {
 			$misc->printTrail('operator');
 			$misc->printTitle($lang['strdrop'], 'pg.operator.drop');
-
-			echo "<p>", sprintf($lang['strconfdropoperator'], $misc->printVal($_REQUEST['operator'])), "</p>\n";
-
+			
+			echo "<p>", sprintf($lang['strconfdropoperator'], $misc->printVal($_REQUEST['operator'])), "</p>\n";	
+			
 			echo "<form action=\"operators.php\" method=\"post\">\n";
 			echo "<p><input type=\"checkbox\" id=\"cascade\" name=\"cascade\" /> <label for=\"cascade\">{$lang['strcascade']}</label></p>\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"drop\" />\n";
@@ -114,20 +114,20 @@
 			else
 				doDefault($lang['stroperatordroppedbad']);
 		}
-
+		
 	}
-
+	
 	/**
 	 * Show default list of operators in the database
 	 */
 	function doDefault($msg = '') {
 		global $data, $conf, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('schema');
 		$misc->printTabs('schema','operators');
 		$misc->printMsg($msg);
-
+		
 		$operators = $data->getOperators();
 
 		$columns = array(
@@ -176,9 +176,9 @@
 				)
 			)
 		);
-
+		
 		$misc->printTable($operators, $columns, $actions, 'operators-operators', $lang['strnooperators']);
-
+		
 //		TODO operators.php action=create $lang['strcreateoperator']
 	}
 
@@ -187,14 +187,14 @@
 	 */
 	function doTree() {
 		global $misc, $data;
-
+		
 		$operators = $data->getOperators();
-
+		
 		// Operator prototype: "type operator type"
 		$proto = concat(field('oprleftname'), ' ', field('oprname'), ' ', field('oprrightname'));
-
+		
 		$reqvars = $misc->getRequestVars('operator');
-
+		
 		$attrs = array(
 			'text'   => $proto,
 			'icon'   => 'Operator',
@@ -208,13 +208,13 @@
 							)
 						)
 		);
-
+		
 		$misc->printTree($operators, $attrs, 'operators');
 		exit;
 	}
-
+	
 	if ($action == 'tree') doTree();
-
+	
 	$misc->printHeader($lang['stroperators']);
 	$misc->printBody();
 
@@ -232,14 +232,14 @@
 			break;
 		case 'confirm_drop':
 			doDrop(true);
-			break;
+			break;			
 		case 'properties':
 			doProperties();
 			break;
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

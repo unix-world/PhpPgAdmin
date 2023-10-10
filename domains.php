@@ -8,17 +8,17 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
-
-	/**
+	
+	/** 
 	 * Function to save after altering a domain
 	 */
 	function doSaveAlter() {
 		global $data, $lang;
-
-		$status = $data->alterDomain($_POST['domain'], $_POST['domdefault'],
+		
+		$status = $data->alterDomain($_POST['domain'], $_POST['domdefault'], 
 			isset($_POST['domnotnull']), $_POST['domowner']);
 		if ($status == 0)
 			doProperties($lang['strdomainaltered']);
@@ -32,25 +32,25 @@
 	function doAlter($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+	
 		$misc->printTrail('domain');
 		$misc->printTitle($lang['stralter'],'pg.domain.alter');
 		$misc->printMsg($msg);
-
+		
 		// Fetch domain info
 		$domaindata = $data->getDomain($_REQUEST['domain']);
 		// Fetch all users
 		$users = $data->getUsers();
-
+		
 		if ($domaindata->recordCount() > 0) {
-			if (!isset($_POST['domname'])) {
+			if (!isset($_POST['domname'])) {				
 				$_POST['domtype'] = $domaindata->fields['domtype'];
 				$_POST['domdefault'] = $domaindata->fields['domdef'];
 				$domaindata->fields['domnotnull'] = $data->phpBool($domaindata->fields['domnotnull']);
 				if ($domaindata->fields['domnotnull']) $_POST['domnotnull'] = 'on';
 				$_POST['domowner'] = $domaindata->fields['domowner'];
 			}
-
+			
 			// Display domain info
 			echo "<form action=\"domains.php\" method=\"post\">\n";
 			echo "<table>\n";
@@ -61,7 +61,7 @@
 			echo "<tr><th class=\"data left\"><label for=\"domnotnull\">{$lang['strnotnull']}</label></th>\n";
 			echo "<td class=\"data1\"><input type=\"checkbox\" id=\"domnotnull\" name=\"domnotnull\"", (isset($_POST['domnotnull']) ? ' checked="checked"' : ''), " /></td></tr>\n";
 			echo "<tr><th class=\"data left\">{$lang['strdefault']}</th>\n";
-			echo "<td class=\"data1\"><input name=\"domdefault\" size=\"32\" value=\"",
+			echo "<td class=\"data1\"><input name=\"domdefault\" size=\"32\" value=\"", 
 				htmlspecialchars($_POST['domdefault']), "\" /></td></tr>\n";
 			echo "<tr><th class=\"data left required\">{$lang['strowner']}</th>\n";
 			echo "<td class=\"data1\"><select name=\"domowner\">";
@@ -71,7 +71,7 @@
 					($uname == $_POST['domowner']) ? ' selected="selected"' : '', ">", htmlspecialchars($uname), "</option>\n";
 				$users->moveNext();
 			}
-			echo "</select></td></tr>\n";
+			echo "</select></td></tr>\n";				
 			echo "</table>\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"save_alter\" />\n";
 			echo "<input type=\"hidden\" name=\"domain\" value=\"", htmlspecialchars($_REQUEST['domain']), "\" />\n";
@@ -82,7 +82,7 @@
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
 	}
-
+	
 	/**
 	 * Confirm and then actually add a CHECK constraint
 	 */
@@ -143,9 +143,9 @@
 			$misc->printTrail('domain');
 			$misc->printTitle($lang['strdrop'],'pg.constraint.drop');
 			$misc->printMsg($msg);
-
-			echo "<p>", sprintf($lang['strconfdropconstraint'], $misc->printVal($_REQUEST['constraint']),
-				$misc->printVal($_REQUEST['domain'])), "</p>\n";
+			
+			echo "<p>", sprintf($lang['strconfdropconstraint'], $misc->printVal($_REQUEST['constraint']), 
+				$misc->printVal($_REQUEST['domain'])), "</p>\n";	
 			echo "<form action=\"domains.php\" method=\"post\">\n";
 			echo "<input type=\"hidden\" name=\"action\" value=\"drop_con\" />\n";
 			echo "<input type=\"hidden\" name=\"domain\" value=\"", htmlspecialchars($_REQUEST['domain']), "\" />\n";
@@ -163,22 +163,22 @@
 			else
 				doDropConstraint(true, $lang['strconstraintdroppedbad']);
 		}
-
+		
 	}
-
+	
 	/**
 	 * Show properties for a domain.  Allow manipulating constraints as well.
 	 */
 	function doProperties($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+	
 		$misc->printTrail('domain');
 		$misc->printTitle($lang['strproperties'],'pg.domain');
 		$misc->printMsg($msg);
-
+		
 		$domaindata = $data->getDomain($_REQUEST['domain']);
-
+		
 		if ($domaindata->recordCount() > 0) {
 			// Show comment if any
 			if ($domaindata->fields['domcomment'] !== null)
@@ -198,7 +198,7 @@
 			echo "<tr><th class=\"data left\">{$lang['strowner']}</th>\n";
 			echo "<td class=\"data1\">", $misc->printVal($domaindata->fields['domowner']), "</td></tr>\n";
 			echo "</table>\n";
-
+			
 			// Display domain constraints
 			echo "<h3>{$lang['strconstraints']}</h3>\n";
 			if ($data->hasDomainConstraints()) {
@@ -239,7 +239,7 @@
 			}
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
-
+		
 		$navlinks = array (
 			'drop' => array (
 				'attr'=> array (
@@ -289,10 +289,10 @@
 				'content' => $lang['stralter']
 			);
 		}
-
+		
 		$misc->printNavLinks($navlinks, 'domains-properties', get_defined_vars());
 	}
-
+	
 	/**
 	 * Show confirmation of drop and perform actual drop
 	 */
@@ -303,8 +303,8 @@
 		if ($confirm) {
 			$misc->printTrail('domain');
 			$misc->printTitle($lang['strdrop'],'pg.domain.drop');
-
-			echo "<p>", sprintf($lang['strconfdropdomain'], $misc->printVal($_REQUEST['domain'])), "</p>\n";
+			
+			echo "<p>", sprintf($lang['strconfdropdomain'], $misc->printVal($_REQUEST['domain'])), "</p>\n";	
 			echo "<form action=\"domains.php\" method=\"post\">\n";
 			echo "<p><input type=\"checkbox\" id=\"cascade\" name=\"cascade\" /><label for=\"cascade\">{$lang['strcascade']}</label></p>\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"drop\" />\n";
@@ -321,16 +321,16 @@
 			else
 				doDefault($lang['strdomaindroppedbad']);
 		}
-
+		
 	}
-
+	
 	/**
 	 * Displays a screen where they can enter a new domain
 	 */
 	function doCreate($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		if (!isset($_POST['domname'])) $_POST['domname'] = '';
 		if (!isset($_POST['domtype'])) $_POST['domtype'] = '';
 		if (!isset($_POST['domlength'])) $_POST['domlength'] = '';
@@ -339,7 +339,7 @@
 		if (!isset($_POST['domcheck'])) $_POST['domcheck'] = '';
 
 		$types = $data->getTypes(true);
-
+		
 		$misc->printTrail('schema');
 		$misc->printTitle($lang['strcreatedomain'],'pg.domain.create');
 		$misc->printMsg($msg);
@@ -347,20 +347,20 @@
 		echo "<form action=\"domains.php\" method=\"post\">\n";
 		echo "<table>\n";
 		echo "<tr><th class=\"data left required\" style=\"width: 70px\">{$lang['strname']}</th>\n";
-		echo "<td class=\"data1\"><input name=\"domname\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "<td class=\"data1\"><input name=\"domname\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_POST['domname']), "\" /></td></tr>\n";
 		echo "<tr><th class=\"data left required\">{$lang['strtype']}</th>\n";
 		echo "<td class=\"data1\">\n";
-		// Output return type list
+		// Output return type list		
 		echo "<select name=\"domtype\">\n";
 		while (!$types->EOF) {
-			echo "<option value=\"", htmlspecialchars($types->fields['typname']), "\"",
+			echo "<option value=\"", htmlspecialchars($types->fields['typname']), "\"", 
 				($types->fields['typname'] == $_POST['domtype']) ? ' selected="selected"' : '', ">",
 				$misc->printVal($types->fields['typname']), "</option>\n";
 			$types->moveNext();
 		}
 		echo "</select>\n";
-
+		
 		// Type length
 		echo "<input type=\"text\" size=\"4\" name=\"domlength\" value=\"", htmlspecialchars($_POST['domlength']), "\" />";
 
@@ -371,14 +371,14 @@
 		echo "</select></td></tr>\n";
 
 		echo "<tr><th class=\"data left\"><label for=\"domnotnull\">{$lang['strnotnull']}</label></th>\n";
-		echo "<td class=\"data1\"><input type=\"checkbox\" id=\"domnotnull\" name=\"domnotnull\"",
+		echo "<td class=\"data1\"><input type=\"checkbox\" id=\"domnotnull\" name=\"domnotnull\"", 
 			(isset($_POST['domnotnull']) ? ' checked="checked"' : ''), " /></td></tr>\n";
 		echo "<tr><th class=\"data left\">{$lang['strdefault']}</th>\n";
-		echo "<td class=\"data1\"><input name=\"domdefault\" size=\"32\" value=\"",
+		echo "<td class=\"data1\"><input name=\"domdefault\" size=\"32\" value=\"", 
 			htmlspecialchars($_POST['domdefault']), "\" /></td></tr>\n";
 		if ($data->hasDomainConstraints()) {
 			echo "<tr><th class=\"data left\">{$lang['strconstraints']}</th>\n";
-			echo "<td class=\"data1\">CHECK (<input name=\"domcheck\" size=\"32\" value=\"",
+			echo "<td class=\"data1\">CHECK (<input name=\"domcheck\" size=\"32\" value=\"", 
 				htmlspecialchars($_POST['domcheck']), "\" />)</td></tr>\n";
 		}
 		echo "</table>\n";
@@ -388,18 +388,18 @@
 		echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 		echo "</form>\n";
 	}
-
+	
 	/**
 	 * Actually creates the new domain in the database
 	 */
 	function doSaveCreate() {
 		global $data, $lang;
-
+		
 		if (!isset($_POST['domcheck'])) $_POST['domcheck'] = '';
 
 		// Check that they've given a name and a definition
 		if ($_POST['domname'] == '') doCreate($lang['strdomainneedsname']);
-		else {
+		else {		 
 			$status = $data->createDomain($_POST['domname'], $_POST['domtype'], $_POST['domlength'], $_POST['domarray'] != '',
 																isset($_POST['domnotnull']), $_POST['domdefault'], $_POST['domcheck']);
 			if ($status == 0)
@@ -407,7 +407,7 @@
 			else
 				doCreate($lang['strdomaincreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * Show default list of domains in the database
@@ -415,13 +415,13 @@
 	function doDefault($msg = '') {
 		global $data, $conf, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('schema');
 		$misc->printTabs('schema','domains');
 		$misc->printMsg($msg);
-
+		
 		$domains = $data->getDomains();
-
+		
 		$columns = array(
 			'domain' => array(
 				'title' => $lang['strdomain'],
@@ -455,7 +455,7 @@
 				'field' => field('domcomment'),
 			),
 		);
-
+		
 		$actions = array(
 			'alter' => array(
 				'content' => $lang['stralter'],
@@ -484,7 +484,7 @@
 		);
 
 		if (!$data->hasAlterDomains()) unset($actions['alter']);
-
+		
 		$misc->printTable($domains, $columns, $actions, 'domains-domains', $lang['strnodomains']);
 
 		$navlinks = array (
@@ -505,17 +505,17 @@
 		);
 		$misc->printNavLinks($navlinks, 'domains-domains', get_defined_vars());
 	}
-
+	
 	/**
 	 * Generate XML for the browser tree.
 	 */
 	function doTree() {
 		global $misc, $data;
-
+		
 		$domains = $data->getDomains();
-
+		
 		$reqvars = $misc->getRequestVars('domain');
-
+		
 		$attrs = array(
 			'text'   => field('domname'),
 			'icon'   => 'Domain',
@@ -528,11 +528,11 @@
 							)
 						)
 		);
-
+		
 		$misc->printTree($domains, $attrs, 'domains');
 		exit;
 	}
-
+	
 	if ($action == 'tree') doTree();
 
 	$misc->printHeader($lang['strdomains']);
@@ -552,7 +552,7 @@
 			break;
 		case 'confirm_drop_con':
 			doDropConstraint(true);
-			break;
+			break;			
 		case 'save_create':
 			if (isset($_POST['cancel'])) doDefault();
 			else doSaveCreate();
@@ -566,7 +566,7 @@
 			break;
 		case 'confirm_drop':
 			doDrop(true);
-			break;
+			break;			
 		case 'save_alter':
 			if (isset($_POST['alter'])) doSaveAlter();
 			else doProperties();
@@ -580,8 +580,8 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
-
+	
 ?>

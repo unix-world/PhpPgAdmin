@@ -11,7 +11,7 @@
 
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
-
+		
 	/**
 	 * If a user is not a superuser, then we have an 'account management' page
 	 * where they can change their password, etc.  We don't prevent them from
@@ -21,12 +21,12 @@
 	function doAccount($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$server_info = $misc->getServerInfo();
-
+		
 		$userdata = $data->getUser($server_info['username']);
 		$_REQUEST['user'] = $server_info['username'];
-
+		
 		$misc->printTrail('user');
 		$misc->printTabs('server','account');
 		$misc->printMsg($msg);
@@ -46,7 +46,7 @@
 			echo "</tr>\n</table>\n";
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
-
+		
 		$misc->printNavLinks(array ('changepassword' => array (
 				'attr'=> array (
 					'href' => array (
@@ -60,29 +60,29 @@
 				'content' => $lang['strchangepassword']
 			)), 'users-account', get_defined_vars());
 	}
-
+	
 	/**
 	 * Show confirmation of change password and actually change password
 	 */
 	function doChangePassword($confirm, $msg = '') {
 		global $data, $misc;
 		global $lang, $conf;
-
+		
 		$server_info = $misc->getServerInfo();
-
+		
 		if ($confirm) {
 			$_REQUEST['user'] = $server_info['username'];
 			$misc->printTrail('user');
 			$misc->printTitle($lang['strchangepassword'],'pg.user.alter');
 			$misc->printMsg($msg);
-
+			
 			if (!isset($_POST['password'])) $_POST['password'] = '';
 			if (!isset($_POST['confirm'])) $_POST['confirm'] = '';
-
+			
 			echo "<form action=\"users.php\" method=\"post\">\n";
 			echo "<table>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strpassword']}</th>\n";
-			echo "\t\t<td><input type=\"password\" name=\"password\" size=\"32\" value=\"",
+			echo "\t\t<td><input type=\"password\" name=\"password\" size=\"32\" value=\"", 
 				htmlspecialchars($_POST['password']), "\" /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strconfirm']}</th>\n";
 			echo "\t\t<td><input type=\"password\" name=\"confirm\" size=\"32\" value=\"\" /></td>\n\t</tr>\n";
@@ -101,14 +101,14 @@
 			elseif ($_POST['password'] != $_POST['confirm'])
 				doChangePassword(true, $lang['strpasswordconfirm']);
 			else {
-				$status = $data->changePassword($server_info['username'],
+				$status = $data->changePassword($server_info['username'], 
 					$_POST['password']);
 				if ($status == 0)
 					doAccount($lang['strpasswordchanged']);
 				else
 					doAccount($lang['strpasswordchangedbad']);
 			}
-		}
+		}		
 	}
 
 	/**
@@ -117,13 +117,13 @@
 	function doEdit($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+	
 		$misc->printTrail('user');
 		$misc->printTitle($lang['stralter'],'pg.user.alter');
 		$misc->printMsg($msg);
-
+		
 		$userdata = $data->getUser($_REQUEST['username']);
-
+		
 		if ($userdata->recordCount() > 0) {
 			$server_info = $misc->getServerInfo();
 			$canRename = $data->hasUserRename() && ($_REQUEST['username'] != $server_info['username']);
@@ -137,16 +137,16 @@
 				$_POST['formExpires'] = $userdata->fields['useexpires'] == 'infinity' ? '' : $userdata->fields['useexpires'];
 				$_POST['formPassword'] = '';
 			}
-
+		
 			echo "<form action=\"users.php\" method=\"post\">\n";
 			echo "<table>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strusername']}</th>\n";
 			echo "\t\t<td class=\"data1\">", ($canRename ? "<input name=\"newname\" size=\"15\" maxlength=\"{$data->_maxNameLen}\" value=\"" . htmlspecialchars($_POST['newname']) . "\" />" : $misc->printVal($userdata->fields['usename'])), "</td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formSuper\">{$lang['strsuper']}</label></th>\n";
-			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"",
+			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"", 
 				(isset($_POST['formSuper'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCreateDB\">{$lang['strcreatedb']}</label></th>\n";
-			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"",
+			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"", 
 				(isset($_POST['formCreateDB'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strexpires']}</th>\n";
 			echo "\t\t<td class=\"data1\"><input size=\"16\" name=\"formExpires\" value=\"", htmlspecialchars($_POST['formExpires']), "\" /></td>\n\t</tr>\n";
@@ -164,13 +164,13 @@
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
 	}
-
-	/**
+	
+	/** 
 	 * Function to save after editing a user
 	 */
 	function doSaveEdit() {
 		global $data, $lang;
-
+		
 		// Check name and password
 		if (isset($_POST['newname']) && $_POST['newname'] == '')
 			doEdit($lang['struserneedsname']);
@@ -196,9 +196,9 @@
 		if ($confirm) {
 			$misc->printTrail('user');
 			$misc->printTitle($lang['strdrop'],'pg.user.drop');
-
-			echo "<p>", sprintf($lang['strconfdropuser'], $misc->printVal($_REQUEST['username'])), "</p>\n";
-
+			
+			echo "<p>", sprintf($lang['strconfdropuser'], $misc->printVal($_REQUEST['username'])), "</p>\n";	
+			
 			echo "<form action=\"users.php\" method=\"post\">\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"drop\" />\n";
 			echo "<input type=\"hidden\" name=\"username\" value=\"", htmlspecialchars($_REQUEST['username']), "\" />\n";
@@ -213,21 +213,21 @@
 				doDefault($lang['struserdropped']);
 			else
 				doDefault($lang['struserdroppedbad']);
-		}
+		}		
 	}
-
+	
 	/**
 	 * Displays a screen where they can enter a new user
 	 */
 	function doCreate($msg = '') {
 		global $data, $misc, $username;
 		global $lang;
-
+		
 		if (!isset($_POST['formUsername'])) $_POST['formUsername'] = '';
 		if (!isset($_POST['formPassword'])) $_POST['formPassword'] = '';
 		if (!isset($_POST['formConfirm'])) $_POST['formConfirm'] = '';
 		if (!isset($_POST['formExpires'])) $_POST['formExpires'] = '';
-
+		
 		$misc->printTrail('server');
 		$misc->printTitle($lang['strcreateuser'],'pg.user.create');
 		$misc->printMsg($msg);
@@ -241,10 +241,10 @@
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strconfirm']}</th>\n";
 		echo "\t\t<td class=\"data1\"><input size=\"15\" type=\"password\" name=\"formConfirm\" value=\"", htmlspecialchars($_POST['formConfirm']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formSuper\">{$lang['strsuper']}</label></th>\n";
-		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"",
+		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"", 
 			(isset($_POST['formSuper'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCreateDB\">{$lang['strcreatedb']}</label></th>\n";
-		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"",
+		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"", 
 			(isset($_POST['formCreateDB'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strexpires']}</th>\n";
 		echo "\t\t<td class=\"data1\"><input size=\"30\" name=\"formExpires\" value=\"", htmlspecialchars($_POST['formExpires']), "\" /></td>\n\t</tr>\n";
@@ -255,7 +255,7 @@
 		echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 		echo "</form>\n";
 	}
-
+	
 	/**
 	 * Actually creates the new user in the database
 	 */
@@ -268,15 +268,15 @@
 			doCreate($lang['struserneedsname']);
 		else if ($_POST['formPassword'] != $_POST['formConfirm'])
 			doCreate($lang['strpasswordconfirm']);
-		else {
-			$status = $data->createUser($_POST['formUsername'], $_POST['formPassword'],
+		else {		
+			$status = $data->createUser($_POST['formUsername'], $_POST['formPassword'], 
 				isset($_POST['formCreateDB']), isset($_POST['formSuper']), $_POST['formExpires'], array());
 			if ($status == 0)
 				doDefault($lang['strusercreated']);
 			else
 				doCreate($lang['strusercreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * Show default list of users in the database
@@ -284,18 +284,18 @@
 	function doDefault($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		function renderUseExpires($val) {
 			global $lang;
 			return $val == 'infinity' ? $lang['strnever'] : htmlspecialchars($val);
  		}
-
+		
 		$misc->printTrail('server');
 		$misc->printTabs('server','users');
 		$misc->printMsg($msg);
-
+		
 		$users = $data->getUsers();
-
+		
 		$columns = array(
 			'user' => array(
 				'title' => $lang['strusername'],
@@ -325,7 +325,7 @@
 				'title' => $lang['stractions'],
 			),
 		);
-
+		
 		$actions = array(
 			'alter' => array(
 				'content' => $lang['stralter'],
@@ -352,7 +352,7 @@
 				)
 			),
 		);
-
+		
 		$misc->printTable($users, $columns, $actions, 'users-users', $lang['strnousers']);
 
 		$misc->printNavLinks(array ('create' => array (
@@ -380,7 +380,7 @@
 			break;
 		case 'confchangepassword':
 			doChangePassword(true);
-			break;
+			break;			
 		case 'account':
 			doAccount();
 			break;
@@ -388,7 +388,7 @@
 			if (isset($_REQUEST['cancel'])) doDefault();
 			else doSaveCreate();
 			break;
-		case 'create':
+		case 'create':			
 			doCreate();
 			break;
 		case 'drop':
@@ -408,7 +408,7 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

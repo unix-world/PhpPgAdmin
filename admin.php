@@ -20,7 +20,7 @@
 
 				echo "<form action=\"{$script}\" method=\"post\">\n";
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfclustertable'], $misc->printVal($a['table'])), "</p>\n";
 					echo "<input type=\"hidden\" name=\"table[]\" value=\"", htmlspecialchars($a['table']), "\" />\n";
 				}
@@ -103,7 +103,7 @@
 
 				echo "<form action=\"{$script}\" method=\"post\">\n";
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfreindextable'], $misc->printVal($a['table'])), "</p>\n";
 					echo "<input type=\"hidden\" name=\"table[]\" value=\"", htmlspecialchars($a['table']), "\" />\n";
 				}
@@ -181,7 +181,7 @@
 
 				echo "<form action=\"{$script}\" method=\"post\">\n";
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfanalyzetable'], $misc->printVal($a['table'])), "</p>\n";
 					echo "<input type=\"hidden\" name=\"table[]\" value=\"", htmlspecialchars($a['table']), "\" />\n";
 				}
@@ -256,7 +256,7 @@
 
 				echo "<form action=\"{$script}\" method=\"post\">\n";
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfvacuumtable'], $misc->printVal($a['table'])), "</p>\n";
 					echo "<input type=\"hidden\" name=\"table[]\" value=\"", htmlspecialchars($a['table']), "\" />\n";
 				}
@@ -398,7 +398,7 @@
 			echo "</form>\n";
 		}
 		else {
-			$status = $data->saveAutovacuum($_REQUEST['table'], $_POST['autovacuum_enabled'], $_POST['autovacuum_vacuum_threshold'],
+			$status = $data->saveAutovacuum($_REQUEST['table'], $_POST['autovacuum_enabled'], $_POST['autovacuum_vacuum_threshold'], 
 				$_POST['autovacuum_vacuum_scale_factor'], $_POST['autovacuum_analyze_threshold'], $_POST['autovacuum_analyze_scale_factor'],
 				$_POST['autovacuum_vacuum_cost_delay'], $_POST['autovacuum_vacuum_cost_limit']);
 
@@ -426,7 +426,7 @@
 
 			$script = ($type == 'database')? 'database.php' : 'tables.php';
 
-			printf("<p>{$lang['strdelvacuumtable']}</p>\n",
+			printf("<p>{$lang['strdelvacuumtable']}</p>\n", 
 				$misc->printVal("\"{$_GET['schema']}\".\"{$_GET['table']}\""));
 
 			echo "<form style=\"float: left\" action=\"{$script}\" method=\"post\">\n";
@@ -658,7 +658,7 @@
 			);
 
 			if ($type == 'table') {
-				unset($actions['edit']['vars']['schema'],
+				unset($actions['edit']['vars']['schema'], 
 					$actions['delete']['vars']['schema'],
 					$columns['namespace'],
 					$columns['relname']
@@ -749,5 +749,3 @@
 		}
 		return true;
 	}
-
-?>

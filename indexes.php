@@ -9,7 +9,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 	include_once('./classes/class.select.php');
-
+		
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 
 	/**
@@ -22,7 +22,7 @@
 		if ($confirm) {
 			// Default analyze to on
 			$_REQUEST['analyze'] = true;
-
+			
 			$misc->printTrail('index');
 			$misc->printTitle($lang['strclusterindex'],'pg.index.cluster');
 
@@ -81,7 +81,7 @@
 		$attrs = $data->getTableAttributes($_REQUEST['table']);
 		// Fetch all tablespaces from the database
 		if ($data->hasTablespaces()) $tablespaces = $data->getTablespaces();
-
+		
 		$misc->printTrail('table');
 		$misc->printTitle($lang['strcreateindex'],'pg.index.create');
 		$misc->printMsg($msg);
@@ -91,9 +91,8 @@
 
 		if ($attrs->recordCount() > 0) {
 			while (!$attrs->EOF) {
-			//	$selColumns->add(new XHTML_Option($attrs->fields['attname']));
-				$XHTML_Opt = new XHTML_Option($attrs->fields['attname']);
-				$selColumns->add($XHTML_Opt);
+                $XHTML_Option = new XHTML_Option($attrs->fields['attname']);
+                $selColumns->add($XHTML_Option);
 				$attrs->moveNext();
 			}
 		}
@@ -106,7 +105,7 @@
 		$buttonAdd->set_attribute("type", "button");
 
 		$buttonRemove = new XHTML_Button("remove", "<<");
-		$buttonRemove->set_attribute("onclick", "buttonPressed(this);");
+		$buttonRemove->set_attribute("onclick", "buttonPressed(this);");		
 		$buttonRemove->set_attribute("type", "button");
 
 		echo "<form onsubmit=\"doSelectAll();\" name=\"formIndex\" action=\"indexes.php\" method=\"post\">\n";
@@ -115,7 +114,7 @@
 		echo "<table>\n";
 		echo "<tr><th class=\"data required\" colspan=\"3\">{$lang['strindexname']}</th></tr>";
 		echo "<tr>";
-		echo "<td class=\"data1\" colspan=\"3\"><input type=\"text\" name=\"formIndexName\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "<td class=\"data1\" colspan=\"3\"><input type=\"text\" name=\"formIndexName\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_POST['formIndexName']), "\" /></td></tr>";
 		echo "<tr><th class=\"data\">{$lang['strtablecolumnlist']}</th><th class=\"data\">&nbsp;</th>";
 		echo "<th class=\"data required\">{$lang['strindexcolumnlist']}</th></tr>\n";
@@ -132,17 +131,17 @@
 			echo "<option value=\"", htmlspecialchars($v), "\"",
 				($v == $_POST['formIndexType']) ? ' selected="selected"' : '', ">", htmlspecialchars($v), "</option>\n";
 		}
-		echo "</select></td></tr>\n";
+		echo "</select></td></tr>\n";				
 		echo "<tr>";
 		echo "<th class=\"data left\" scope=\"row\"><label for=\"formUnique\">{$lang['strunique']}</label></th>";
 		echo "<td class=\"data1\"><input type=\"checkbox\" id=\"formUnique\" name=\"formUnique\"", (isset($_POST['formUnique']) ? 'checked="checked"' : ''), " /></td>";
 		echo "</tr>";
 		echo "<tr>";
 		echo "<th class=\"data left\" scope=\"row\">{$lang['strwhere']}</th>";
-		echo "<td class=\"data1\">(<input name=\"formWhere\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "<td class=\"data1\">(<input name=\"formWhere\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_POST['formWhere']), "\" />)</td>";
 		echo "</tr>";
-
+		
 		// Tablespace (if there are any)
 		if ($data->hasTablespaces() && $tablespaces->recordCount() > 0) {
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strtablespace']}</th>\n";
@@ -165,7 +164,7 @@
 			echo "<th class=\"data left\" scope=\"row\"><label for=\"formConcur\">{$lang['strconcurrently']}</label></th>";
 			echo "<td class=\"data1\"><input type=\"checkbox\" id=\"formConcur\" name=\"formConcur\"", (isset($_POST['formConcur']) ? 'checked="checked"' : ''), " /></td>";
 			echo "</tr>";
-		}
+		}	
 
 		echo "</table>";
 
@@ -184,18 +183,18 @@
 	function doSaveCreateIndex() {
 		global $data;
 		global $lang;
-
+		
 		// Handle databases that don't have partial indexes
 		if (!isset($_POST['formWhere'])) $_POST['formWhere'] = '';
 		// Default tablespace to null if it isn't set
 		if (!isset($_POST['formSpc'])) $_POST['formSpc'] = null;
-
+		
 		// Check that they've given a name and at least one column
 		if ($_POST['formIndexName'] == '') doCreateIndex($lang['strindexneedsname']);
 		elseif (!isset($_POST['IndexColumnList']) || $_POST['IndexColumnList'] == '') doCreateIndex($lang['strindexneedscols']);
 		else {
-			$status = $data->createIndex($_POST['formIndexName'], $_POST['table'], $_POST['IndexColumnList'],
-				$_POST['formIndexType'], isset($_POST['formUnique']), $_POST['formWhere'], $_POST['formSpc'],
+			$status = $data->createIndex($_POST['formIndexName'], $_POST['table'], $_POST['IndexColumnList'], 
+				$_POST['formIndexType'], isset($_POST['formUnique']), $_POST['formWhere'], $_POST['formSpc'], 
 				isset($_POST['formConcur']));
 			if ($status == 0)
 				doDefault($lang['strindexcreated']);
@@ -240,30 +239,34 @@
 	function doDefault($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		function indPre(&$rowdata, $actions) {
 			global $data, $lang;
-
+			
 			if ($data->phpBool($rowdata->fields['indisprimary'])) {
 				$rowdata->fields['+constraints'] = $lang['strprimarykey'];
 				$actions['drop']['disable'] = true;
 			}
-			elseif ($data->phpBool($rowdata->fields['indisunique'])) {
+			elseif ($data->phpBool($rowdata->fields['indisunique']) and !$data->phpBool($rowdata->fields['indpred'])) {
 				$rowdata->fields['+constraints'] = $lang['struniquekey'];
+				$actions['drop']['disable'] = true;
+			}
+			elseif ($data->phpBool($rowdata->fields['indisexclusion'])) {
+				$rowdata->fields['+constraints'] = 'Exclusion';
 				$actions['drop']['disable'] = true;
 			}
 			else
 				$rowdata->fields['+constraints'] = '';
-
+			
 			return $actions;
 		}
-
+		
 		$misc->printTrail('table');
 		$misc->printTabs('table','indexes');
 		$misc->printMsg($msg);
 
 		$indexes = $data->getIndexes($_REQUEST['table']);
-
+		
 		$columns = array(
 			'index' => array(
 				'title' => $lang['strname'],
@@ -334,9 +337,9 @@
 				)
 			)
 		);
-
+		
 		$misc->printTable($indexes, $columns, $actions, 'indexes-indexes', $lang['strnoindexes'], 'indPre');
-
+		
 		$misc->printNavLinks(array (
 			'create' => array (
 				'attr'=> array (

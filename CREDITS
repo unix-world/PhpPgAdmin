@@ -4,7 +4,6 @@ CREDITS
 Project Administration & Major Projects
 
 - Robert Treat (xzilla) 
-- Jehan-Guillaume (ioguix) De Rorthais
 
 Translators
 
@@ -22,15 +21,15 @@ Translators
 - Tadashi Jokagi (Japanese)
 - Rafal Slubowski (Polish)
 - Alexander Khodorisky (Russian)
-- Martin Marqués (Spanish)
+- Martin MarquÃ©s (Spanish)
 - Andrej Misovic (Slovak)
 - Devrim Gunduz (Turkish)
 - Libor Vanek (Czech)
-- Marek Cernocký (Czech)
+- Marek ÄŒernockÃ½ (Czech)
 - Stefan Malmqvist (Swedish)
 - Nicola Soranzo (Italian)
 - Petri Jooste (Afrikaans)
-- Sulyok Péter (Hungarian)
+- Sulyok PÃ©ter (Hungarian)
 - Zaki Almuallim (Arabic)
 - Erdenemandal Bat-Erdene (Mongolian)
 - Alex Rootoff (Ukrainian)
@@ -41,9 +40,8 @@ Translators
 - Bernat Pegueroles (Catalan)
 - Fernando Wendt (Brazilan Portuguese)
 - Adamantios Diamantidis (Greek)
-- Marek ¿ernocký (Czech)
 - Alexey Baturin (Russian UTF8)
-- Adrián Chaves Fernández (Galician)
+- AdriÃ¡n Chaves FernÃ¡ndez (Galician)
 
 Look & Feel
 
@@ -56,6 +54,7 @@ Contributors
 
 - Dan Wilson
 - Christopher Kings-Lynne
+- Jehan-Guillaume (ioguix) De Rorthais
 - Felix Meinhold
 - Jean-Michel Poure
 - Rafal Slubowski
@@ -79,6 +78,7 @@ Contributors
 - Leonardo Augusto Sapiras (Improve phpPgAdmin ergonomy during the GSoC 2010, with ioguix as mentor)
 - Julien Rouhaud, aka. rjuju (nested groups)
 - Felipe Figueroa aka. amenadiel
+- Jean-Michel VourgÃ¨re (nirgal)
 
 Third Party Libraries
 
@@ -89,20 +89,13 @@ Third Party Libraries
 Corporate Sponsors
 
 Project resources:
+- Github => Official project home  
 
-- Sourceforge.net - Hosting, source package provider, Bug and Feature request tracker, hosting mailing lists (and ex code repository)
-- github.com - Official GIT repository hosting
-- Kattare Internet (http://www.kattare.com/) - Hosting the demo server
-
-Ongoing contributors:
-
-- OmniTI ( http://omniti.com/ ) - sponsors developpment as Robert Treat employer
-- Dalibo ( http://dalibo.com ) - sponsors developpment as Jehan-Guillaume (ioguix) de Rorthais employer
-
-Feature contributors:
-
+Past Feature Sponsors:
 - SpikeSource (www.spikesource.com) - Slony support
 - Google Summer of Code (http://code.google.com/soc/2006/pgsql/appinfo.html?csaid=DB096D908B948D89) - phpPgAdmin Improvements
 - Google Summer of Code (http://code.google.com/soc/2007/postgres/appinfo.html?csaid=E89B3D5E2DC4170A) - Full Text Search in PostgreSQL GUI Tools
 - Google Summer of Code (http://code.google.com/p/google-summer-of-code-2010-postgres/downloads/detail?name=Leonardo_Augusto_Sapiras.tar.gz) - Improve phpPgAdmin ergonomy
-
+- Dalibo (http://dalibo.com) - sponsored development as Jehan-Guillaume (ioguix) de Rorthais employer
+- OmniTI (https://omniti.com) - sponsored development as Robert Treat employer 
+- credativ (https://credativ.com) - sponsored php development / review

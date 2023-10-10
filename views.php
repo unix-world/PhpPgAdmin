@@ -67,7 +67,7 @@
 					echo "<td style=\"white-space:nowrap;\">";
 					echo "<select name=\"ops[{$attrs->fields['attname']}]\">\n";
 					foreach (array_keys($data->selectOps) as $v) {
-						echo "<option value=\"", htmlspecialchars($v), "\"", ($v == $_REQUEST['ops'][$attrs->fields['attname']]) ? ' selected="selected"' : '',
+						echo "<option value=\"", htmlspecialchars($v), "\"", ($v == $_REQUEST['ops'][$attrs->fields['attname']]) ? ' selected="selected"' : '', 
 						">", htmlspecialchars($v), "</option>\n";
 					}
 					echo "</select></td>\n";
@@ -141,7 +141,7 @@
 			//If multi drop
 			if (isset($_REQUEST['ma'])) {
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo "<p>", sprintf($lang['strconfdropview'], $misc->printVal($a['view'])), "</p>\n";
 					echo '<input type="hidden" name="view[]" value="', htmlspecialchars($a['view']), "\" />\n";
 				}
@@ -214,9 +214,9 @@
 			$misc->printMsg($msg);
 
 			$tblCount = sizeof($_POST['formTables']);
-			//unserialize our schema/table information and store in arrSelTables
+			// Unserialize our schema/table information and store in arrSelTables
 			for ($i = 0; $i < $tblCount; $i++) {
-				$arrSelTables[] = unserialize($_POST['formTables'][$i]);
+				$arrSelTables[] = safeUnserialize($_POST['formTables'][$i]);
 			}
 
 			$linkCount = $tblCount;
@@ -259,7 +259,7 @@
 			echo "<tr><th class=\"data\">{$lang['strcomment']}</th></tr>";
 			echo "<tr>\n<td class=\"data1\">\n";
 			// View comments
-			echo "<textarea name=\"formComment\" rows=\"3\" cols=\"32\">",
+			echo "<textarea name=\"formComment\" rows=\"3\" cols=\"32\">", 
 				htmlspecialchars($_REQUEST['formComment']), "</textarea>\n";
 			echo "</td>\n</tr>\n";
 			echo "</table>\n";
@@ -393,13 +393,13 @@
 		echo "<form action=\"views.php\" method=\"post\">\n";
 		echo "<table style=\"width: 100%\">\n";
 		echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strname']}</th>\n";
-		echo "\t<td class=\"data1\"><input name=\"formView\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+		echo "\t<td class=\"data1\"><input name=\"formView\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 			htmlspecialchars($_REQUEST['formView']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strdefinition']}</th>\n";
-		echo "\t<td class=\"data1\"><textarea style=\"width:100%;\" rows=\"10\" cols=\"50\" name=\"formDefinition\">",
+		echo "\t<td class=\"data1\"><textarea style=\"width:100%;\" rows=\"10\" cols=\"50\" name=\"formDefinition\">", 
 			htmlspecialchars($_REQUEST['formDefinition']), "</textarea></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strcomment']}</th>\n";
-		echo "\t\t<td class=\"data1\"><textarea name=\"formComment\" rows=\"3\" cols=\"32\">",
+		echo "\t\t<td class=\"data1\"><textarea name=\"formComment\" rows=\"3\" cols=\"32\">", 
 			htmlspecialchars($_REQUEST['formComment']), "</textarea></td>\n\t</tr>\n";
 		echo "</table>\n";
 		echo "<p><input type=\"hidden\" name=\"action\" value=\"save_create\" />\n";
@@ -446,7 +446,7 @@
 				$tmpHsh = array();
 
 			foreach ($_POST['formFields'] as $curField) {
-				$arrTmp = unserialize($curField);
+				$arrTmp = safeUnserialize($curField);
 				$data->fieldArrayClean($arrTmp);
 				if (! empty($_POST['dblFldMeth']) ) { // doublon control
 					if (empty($tmpHsh[$arrTmp['fieldname']])) { // field does not exist
@@ -486,8 +486,8 @@
 					while ($j < $count) {
 						foreach ($arrLinks as $curLink) {
 
-							$arrLeftLink = unserialize($curLink['leftlink']);
-							$arrRightLink = unserialize($curLink['rightlink']);
+							$arrLeftLink = safeUnserialize($curLink['leftlink']);
+							$arrRightLink = safeUnserialize($curLink['rightlink']);
 							$data->fieldArrayClean($arrLeftLink);
 							$data->fieldArrayClean($arrRightLink);
 
@@ -500,7 +500,7 @@
 								// This can (and should be) more optimized for multi-column foreign keys
 								$adj_tbl2 = in_array($tbl2, $arrUsedTbls) ? "$tbl2 AS alias_ppa_" . mktime() : $tbl2;
 
-								$linkFields .= strlen($linkFields) ? "{$curLink['operator']} $adj_tbl2 ON (\"{$arrLeftLink['schemaname']}\".\"{$arrLeftLink['tablename']}\".\"{$arrLeftLink['fieldname']}\" = \"{$arrRightLink['schemaname']}\".\"{$arrRightLink['tablename']}\".\"{$arrRightLink['fieldname']}\") "
+								$linkFields .= strlen($linkFields) ? "{$curLink['operator']} $adj_tbl2 ON (\"{$arrLeftLink['schemaname']}\".\"{$arrLeftLink['tablename']}\".\"{$arrLeftLink['fieldname']}\" = \"{$arrRightLink['schemaname']}\".\"{$arrRightLink['tablename']}\".\"{$arrRightLink['fieldname']}\") " 
 									: "$tbl1 {$curLink['operator']} $adj_tbl2 ON (\"{$arrLeftLink['schemaname']}\".\"{$arrLeftLink['tablename']}\".\"{$arrLeftLink['fieldname']}\" = \"{$arrRightLink['schemaname']}\".\"{$arrRightLink['tablename']}\".\"{$arrRightLink['fieldname']}\") ";
 
 								$arrJoined[] = $curLink;
@@ -514,10 +514,10 @@
 			}
 
 			//if linkfields has no length then either _POST['formLink'] was not set, or there were no join conditions
-			//just select from all seleted tables - a cartesian join do a
+			//just select from all selected tables - a cartesian join do a
 			if (!strlen($linkFields) ) {
 				foreach ($_POST['formTables'] as $curTable) {
-					$arrTmp = unserialize($curTable);
+					$arrTmp = safeUnserialize($curTable);
 					$data->fieldArrayClean($arrTmp);
 					$linkFields .= strlen($linkFields) ? ", \"{$arrTmp['schemaname']}\".\"{$arrTmp['tablename']}\"" : "\"{$arrTmp['schemaname']}\".\"{$arrTmp['tablename']}\"";
 				}
@@ -527,9 +527,9 @@
 			if (is_array($_POST['formCondition']) ) {
 				foreach ($_POST['formCondition'] as $curCondition) {
 					if (strlen($curCondition['field']) && strlen($curCondition['txt']) ) {
-						$arrTmp = unserialize($curCondition['field']);
+						$arrTmp = safeUnserialize($curCondition['field']);
 						$data->fieldArrayClean($arrTmp);
-						$addConditions .= strlen($addConditions) ? " AND \"{$arrTmp['schemaname']}\".\"{$arrTmp['tablename']}\".\"{$arrTmp['fieldname']}\" {$curCondition['operator']} '{$curCondition['txt']}' "
+						$addConditions .= strlen($addConditions) ? " AND \"{$arrTmp['schemaname']}\".\"{$arrTmp['tablename']}\".\"{$arrTmp['fieldname']}\" {$curCondition['operator']} '{$curCondition['txt']}' " 
 							: " \"{$arrTmp['schemaname']}\".\"{$arrTmp['tablename']}\".\"{$arrTmp['fieldname']}\" {$curCondition['operator']} '{$curCondition['txt']}' ";
 					}
 				}
@@ -724,7 +724,7 @@
 			'text'   => field('title'),
 			'icon'   => field('icon'),
 			'action' => url(field('url'),	$reqvars, field('urlvars'),	array('view' => $_REQUEST['view'])),
-			'branch' => ifempty(
+			'branch' => ifempty( 
 				field('branch'), '', url(field('url'), field('urlvars'), $reqvars,
 					array(
 						'action' => 'tree',
@@ -784,4 +784,3 @@
 
 	$misc->printFooter();
 
-?>

@@ -11,46 +11,46 @@
 
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 
-	/**
+	/** 
 	 * Function to save after editing a view
 	 */
 	function doSaveEdit() {
 		global $data, $lang;
-
+		
 		$status = $data->setView($_POST['view'], $_POST['formDefinition'], $_POST['formComment']);
 		if ($status == 0)
 			doDefinition($lang['strviewupdated']);
 		else
 			doEdit($lang['strviewupdatedbad']);
 	}
-
+	
 	/**
 	 * Function to allow editing of a view
 	 */
 	function doEdit($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('view');
 		$misc->printTitle($lang['stredit'],'pg.view.alter');
 		$misc->printMsg($msg);
-
+		
 		$viewdata = $data->getView($_REQUEST['view']);
-
+		
 		if ($viewdata->recordCount() > 0) {
-
+			
 			if (!isset($_POST['formDefinition'])) {
 				$_POST['formDefinition'] = $viewdata->fields['vwdefinition'];
 				$_POST['formComment'] = $viewdata->fields['relcomment'];
 			}
-
+			
 			echo "<form action=\"viewproperties.php\" method=\"post\">\n";
 			echo "<table style=\"width: 100%\">\n";
 			echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strdefinition']}</th>\n";
-			echo "\t\t<td class=\"data1\"><textarea style=\"width: 100%;\" rows=\"20\" cols=\"50\" name=\"formDefinition\">",
+			echo "\t\t<td class=\"data1\"><textarea style=\"width: 100%;\" rows=\"20\" cols=\"50\" name=\"formDefinition\">", 
 				htmlspecialchars($_POST['formDefinition']), "</textarea></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strcomment']}</th>\n";
-			echo "\t\t<td class=\"data1\"><textarea rows=\"3\" cols=\"32\" name=\"formComment\">",
+			echo "\t\t<td class=\"data1\"><textarea rows=\"3\" cols=\"32\" name=\"formComment\">", 
 				htmlspecialchars($_POST['formComment']), "</textarea></td>\n\t</tr>\n";
 			echo "</table>\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"save_edit\" />\n";
@@ -63,12 +63,12 @@
 		else echo "<p>{$lang['strnodata']}</p>\n";
 	}
 
-	/**
+	/** 
 	 * Allow the dumping of the data "in" a view
-	 * NOTE:: PostgreSQL doesn't currently support dumping the data in a view
-	 *        so I have disabled the data related parts for now. In the future
-	 *        we should allow it conditionally if it becomes supported.  This is
-	 *        a SMOP since it is based on pg_dump version not backend version.
+	 * NOTE:: PostgreSQL doesn't currently support dumping the data in a view 
+	 *        so I have disabled the data related parts for now. In the future 
+	 *        we should allow it conditionally if it becomes supported.  This is 
+	 *        a SMOP since it is based on pg_dump version not backend version. 
 	 */
 	function doExport($msg = '') {
 		global $data, $misc;
@@ -111,7 +111,7 @@
 		echo "<td><label for=\"sd_clean\">{$lang['strdrop']}</label></td><td><input type=\"checkbox\" id=\"sd_clean\" name=\"sd_clean\" /></td>\n</tr>\n";
 		echo "-->\n";
 		echo "</table>\n";
-
+		
 		echo "<h3>{$lang['stroptions']}</h3>\n";
 		echo "<p><input type=\"radio\" id=\"output1\" name=\"output\" value=\"show\" checked=\"checked\" /><label for=\"output1\">{$lang['strshow']}</label>\n";
 		echo "<br/><input type=\"radio\" id=\"output2\" name=\"output\" value=\"download\" /><label for=\"output2\">{$lang['strdownload']}</label></p>\n";
@@ -130,14 +130,14 @@
 	function doDefinition($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+	
 		// Get view
 		$vdata = $data->getView($_REQUEST['view']);
 
 		$misc->printTrail('view');
 		$misc->printTabs('view','definition');
 		$misc->printMsg($msg);
-
+		
 		if ($vdata->recordCount() > 0) {
 			// Show comment if any
 			if ($vdata->fields['relcomment'] !== null)
@@ -149,7 +149,7 @@
 			echo "</table>\n";
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
-
+		
 		$misc->printNavLinks(array ( 'alter' => array (
 				'attr'=> array (
 					'href' => array (
@@ -181,7 +181,7 @@
 				global $lang;
 
 				$misc->printTrail('column');
-				$misc->printTitle($lang['stralter'],'pg.column.alter');
+				$misc->printTitle($lang['stralter'],'pg.column.alter'); 
 				$misc->printMsg($msg);
 
 				echo "<form action=\"viewproperties.php\" method=\"post\">\n";
@@ -201,13 +201,13 @@
 
 				echo "<tr><td><input name=\"field\" size=\"32\" value=\"",
 					htmlspecialchars($_REQUEST['field']), "\" /></td>";
-
+				
 				echo "<td>", $misc->printVal($data->formatType($column->fields['type'], $column->fields['atttypmod'])), "</td>";
-				echo "<td><input name=\"default\" size=\"20\" value=\"",
+				echo "<td><input name=\"default\" size=\"20\" value=\"", 
 					htmlspecialchars($_REQUEST['default']), "\" /></td>";
-				echo "<td><input name=\"comment\" size=\"32\" value=\"",
+				echo "<td><input name=\"comment\" size=\"32\" value=\"", 
 					htmlspecialchars($_REQUEST['comment']), "\" /></td>";
-
+				
 				echo "</table>\n";
 				echo "<p><input type=\"hidden\" name=\"action\" value=\"properties\" />\n";
 				echo "<input type=\"hidden\" name=\"stage\" value=\"2\" />\n";
@@ -218,7 +218,7 @@
 				echo "<input type=\"submit\" value=\"{$lang['stralter']}\" />\n";
 				echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 				echo "</form>\n";
-
+								
 				break;
 			case 2:
 				global $data, $lang;
@@ -229,9 +229,9 @@
 					doProperties($lang['strcolneedsname']);
 					return;
 				}
-
+				
 				// Alter the view column
-				$status = $data->alterColumn($_REQUEST['view'], $_REQUEST['column'], $_REQUEST['field'],
+				$status = $data->alterColumn($_REQUEST['view'], $_REQUEST['column'], $_REQUEST['field'], 
 							     false, false, $_REQUEST['default'], $_REQUEST['olddefault'],
 							     '', '', '', '', $_REQUEST['comment']);
 				if ($status == 0)
@@ -299,7 +299,7 @@
 					}
 					echo "</select></td></tr>\n";
 				}
-
+				
 				echo "<tr><th class=\"data left\">{$lang['strcomment']}</th>\n";
 				echo "<td class=\"data1\">";
 				echo "<textarea rows=\"3\" cols=\"32\" name=\"comment\">",
@@ -348,7 +348,7 @@
 
 		$reqvars = $misc->getRequestVars('column');
 		$columns = $data->getTableAttributes($_REQUEST['view']);
-
+		
 		$attrs = array (
 			'text'   => field('attname'),
 			'action' => url('colproperties.php',
@@ -389,12 +389,12 @@
 	function doDefault($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		function attPre(&$rowdata) {
 			global $data;
 			$rowdata->fields['+type'] = $data->formatType($rowdata->fields['type'], $rowdata->fields['atttypmod']);
 		}
-
+		
 		$misc->printTrail('view');
 		$misc->printTabs('view','columns');
 		$misc->printMsg($msg);
@@ -402,7 +402,7 @@
 		// Get view
 		$vdata = $data->getView($_REQUEST['view']);
 		// Get columns (using same method for getting a view)
-		$attrs = $data->getTableAttributes($_REQUEST['view']);
+		$attrs = $data->getTableAttributes($_REQUEST['view']);		
 
 		// Show comment if any
 		if ($vdata->fields['relcomment'] !== null)
@@ -431,7 +431,7 @@
 				'field' => field('comment'),
 			),
 		);
-
+		
 		$actions = array(
 			'alter' => array(
 				'content' => $lang['stralter'],
@@ -447,9 +447,9 @@
 				)
 			),
 		);
-
+		
 		$misc->printTable($attrs, $columns, $actions, 'viewproperties-viewproperties', null, 'attPre');
-
+	
 		echo "<br />\n";
 
 		$navlinks = array (
@@ -558,7 +558,7 @@
 			doDefault();
 			break;
 	}
-
+	
 	$misc->printFooter();
 
 ?>

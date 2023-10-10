@@ -24,11 +24,11 @@
 
 	// If format is set, then perform the export
 	if (isset($_REQUEST['what'])) {
-
+		
 		// Include application functions
 		$_no_output = true;
 		include_once('./libraries/lib.inc.php');
-
+		
 		switch ($_REQUEST['what']) {
 			case 'dataonly':
 				// Check to see if they have pg_dump set up and if they do, use that
@@ -76,26 +76,26 @@
 			}
 			else {
 				header('Content-Type: application/download');
-
+		
 				if (isset($extensions[$format]))
 					$ext = $extensions[$format];
 				else
 					$ext = 'txt';
-
+		
 				header('Content-Disposition: attachment; filename=dump.' . $ext);
 			}
 		}
 		else {
 			header('Content-Type: text/plain');
 		}
-
+	
 		if (isset($_REQUEST['query'])) $_REQUEST['query'] = trim(urldecode($_REQUEST['query']));
 
 		// Set the schema search path
 		if (isset($_REQUEST['search_path'])) {
 			$data->setSearchPath(array_map('trim',explode(',',$_REQUEST['search_path'])));
 		}
-
+		
 		// Set up the dump transaction
 		$status = $data->beginDump();
 
@@ -124,11 +124,10 @@
 				echo " FROM stdin;\n";
 				while (!$rs->EOF) {
 					$first = true;
-				//	while(list($k, $v) = each($rs->fields)) {
-					foreach($rs->fields as $k => $v) {
+					foreach ($rs->fields as $k => $v) {
 						// Escape value
 						$v = $data->escapeBytea($v);
-
+						
 						// We add an extra escaping slash onto octal encoded characters
 						$v = preg_replace('/\\\\([0-7]{3})/', '\\\\\1', $v);
 						if ($first) {
@@ -339,7 +338,7 @@
 		echo $misc->form;
 		echo "<input type=\"submit\" value=\"{$lang['strexport']}\" /></p>\n";
 		echo "</form>\n";
-
+		
 		$misc->printFooter();
 	}
 

@@ -8,7 +8,7 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 
@@ -18,13 +18,13 @@
 	function doDefault($msg = '') {
 		global $data, $conf, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('schema');
 		$misc->printTabs('schema','opclasses');
 		$misc->printMsg($msg);
-
+		
 		$opclasses = $data->getOpClasses();
-
+		
 		$columns = array(
 			'accessmethod' => array(
 				'title' => $lang['straccessmethod'],
@@ -48,35 +48,35 @@
 				'field' => field('opccomment'),
 			),
 		);
-
+		
 		$actions = array();
-
+		
 		$misc->printTable($opclasses, $columns, $actions, 'opclasses-opclasses', $lang['strnoopclasses']);
 	}
-
+	
 	/**
 	 * Generate XML for the browser tree.
 	 */
 	function doTree() {
 		global $misc, $data;
-
+		
 		$opclasses = $data->getOpClasses();
-
+		
 		// OpClass prototype: "op_class/access_method"
 		$proto = concat(field('opcname'),'/',field('amname'));
-
+		
 		$attrs = array(
 			'text'   => $proto,
 			'icon'   => 'OperatorClass',
 			'toolTip'=> field('opccomment'),
 		);
-
+		
 		$misc->printTree($opclasses, $attrs, 'opclasses');
 		exit;
 	}
-
+	
 	if ($action == 'tree') doTree();
-
+	
 	$misc->printHeader($lang['stropclasses']);
 	$misc->printBody();
 
@@ -84,7 +84,7 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

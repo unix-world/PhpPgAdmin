@@ -8,7 +8,7 @@
 
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 
@@ -18,11 +18,11 @@
 	function doDefault($msg = '') {
 		global $data, $misc, $database;
 		global $lang;
-
+		
 		$misc->printTrail('database');
 		$misc->printTabs('database','languages');
 		$misc->printMsg($msg);
-
+		
 		$languages = $data->getLanguages();
 
 		$columns = array(
@@ -51,20 +51,20 @@
 	 */
 	function doTree() {
 		global $misc, $data;
-
+		
 		$languages = $data->getLanguages();
-
+		
 		$attrs = array(
 			'text'   => field('lanname'),
 			'icon'   => 'Language'
 		);
-
+		
 		$misc->printTree($languages, $attrs, 'languages');
 		exit;
 	}
-
+	
 	if ($action == 'tree') doTree();
-
+	
 	$misc->printHeader($lang['strlanguages']);
 	$misc->printBody();
 
@@ -72,7 +72,7 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

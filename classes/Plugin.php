@@ -1,5 +1,4 @@
 <?php
-
 abstract class Plugin {
 
 	/**
@@ -66,5 +65,4 @@ abstract class Plugin {
 		return array($this->name, $img);
 	}
 }
-
 ?>

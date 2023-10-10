@@ -9,15 +9,15 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 	include_once('./classes/class.select.php');
-
+	
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 
-	/**
+	/** 
 	 * Function to save after altering a trigger
 	 */
 	function doSaveAlter() {
 		global $data, $lang;
-
+		
 		$status = $data->alterTrigger($_POST['table'], $_POST['trigger'], $_POST['name']);
 		if ($status == 0)
 			doDefault($lang['strtriggeraltered']);
@@ -31,22 +31,22 @@
 	function doAlter($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('trigger');
 		$misc->printTitle($lang['stralter'],'pg.trigger.alter');
 		$misc->printMsg($msg);
-
+		
 		$triggerdata = $data->getTrigger($_REQUEST['table'], $_REQUEST['trigger']);
-
+		
 		if ($triggerdata->recordCount() > 0) {
-
+			
 			if (!isset($_POST['name'])) $_POST['name'] = $triggerdata->fields['tgname'];
-
+			
 			echo "<form action=\"triggers.php\" method=\"post\">\n";
 			echo "<table>\n";
 			echo "<tr><th class=\"data\">{$lang['strname']}</th>\n";
 			echo "<td class=\"data1\">";
-			echo "<input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+			echo "<input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 				htmlspecialchars($_POST['name']), "\" />\n";
 			echo "</table>\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"alter\" />\n";
@@ -59,7 +59,7 @@
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
 	}
-
+	
 	/**
 	 * Show confirmation of drop and perform actual drop
 	 */
@@ -166,11 +166,11 @@
 	function doCreate($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('table');
 		$misc->printTitle($lang['strcreatetrigger'],'pg.trigger.create');
 		$misc->printMsg($msg);
-
+		
 		// Get all the functions that can be used in triggers
 		$funcs = $data->getTriggerFunctions();
 		if ($funcs->recordCount() == 0) {
@@ -181,9 +181,7 @@
 		/* Populate functions */
 		$sel0 = new XHTML_Select('formFunction');
 		while (!$funcs->EOF) {
-		//	$sel0->add(new XHTML_Option($funcs->fields['proname']));
-			$XHTML_Opt = new XHTML_Option($funcs->fields['proname']);
-			$sel0->add($XHTML_Opt);
+			$sel0->add(new XHTML_Option($funcs->fields['proname']));
 			$funcs->moveNext();
 		}
 
@@ -194,11 +192,11 @@
 		/* Populate events */
 		$sel2 = new XHTML_Select('formEvent');
 		$sel2->set_data($data->triggerEvents);
-
-		/* Populate occurences */
+		
+		/* Populate occurrences */
 		$sel3 = new XHTML_Select('formFrequency');
 		$sel3->set_data($data->triggerFrequency);
-
+		
 		echo "<form action=\"triggers.php\" method=\"post\">\n";
 		echo "<table>\n";
 		echo "<tr>\n";
@@ -229,23 +227,23 @@
 		echo $misc->form;
 		echo "</form>\n";
 	}
-
+	
 	/**
 	 * Actually creates the new trigger in the database
 	 */
 	function doSaveCreate() {
 		global $data;
-		global $lang;
-
+		global $lang;		
+	
 		// Check that they've given a name and a definition
 
 		if ($_POST['formFunction'] == '')
 			doCreate($lang['strtriggerneedsfunc']);
 		elseif ($_POST['formTriggerName'] == '')
 			doCreate($lang['strtriggerneedsname']);
-		elseif ($_POST['formEvent'] == '')
+		elseif ($_POST['formEvent'] == '') 
 			doCreate();
-		else {
+		else {		 
 			$status = $data->createTrigger($_POST['formTriggerName'], $_POST['table'],
 					$_POST['formFunction'], $_POST['formExecTime'], $_POST['formEvent'],
 					$_POST['formFrequency'], $_POST['formTriggerArgs']);
@@ -254,7 +252,7 @@
 			else
 				doCreate($lang['strtriggercreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * List all the triggers on the table
@@ -275,7 +273,7 @@
 
 			return $actions;
 		}
-
+		
 		$misc->printTrail('table');
 		$misc->printTabs('table','triggers');
 		$misc->printMsg($msg);
@@ -364,7 +362,7 @@
 		}
 
 		$misc->printTable($triggers, $columns, $actions, 'triggers-triggers', $lang['strnotriggers'], 'tgPre');
-
+		
 		$misc->printNavLinks(array ('create' => array (
 				'attr'=> array (
 					'href' => array (
@@ -389,7 +387,7 @@
 		$triggers = $data->getTriggers($_REQUEST['table']);
 
 		$reqvars = $misc->getRequestVars('table');
-
+		
 		$attrs = array(
 			'text'   => field('tgname'),
 			'icon'   => 'Trigger',
@@ -444,7 +442,7 @@
 			doDefault();
 			break;
 	}
-
+	
 	$misc->printFooter();
 
 ?>

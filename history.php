@@ -17,24 +17,24 @@
 		$onchange = "onchange=\"location.href='history.php?server=' + encodeURI(server.options[server.selectedIndex].value) + '&amp;database=' + encodeURI(database.options[database.selectedIndex].value) + '&amp;'\"";
 
 		$misc->printHeader($lang['strhistory']);
-
+		
 		// Bring to the front always
 		echo "<body onload=\"window.focus();\">\n";
-
+	
 		echo "<form action=\"history.php\" method=\"post\">\n";
 		$misc->printConnection($onchange);
 		echo "</form><br />";
-
+	
 		if (!isset($_REQUEST['database'])) {
 			echo "<p>{$lang['strnodatabaseselected']}</p>\n";
 			return;
 		}
-
+			
 		if (isset($_SESSION['history'][$_REQUEST['server']][$_REQUEST['database']])) {
 			include_once('classes/ArrayRecordSet.php');
-
+						   
 			$history = new ArrayRecordSet($_SESSION['history'][$_REQUEST['server']][$_REQUEST['database']]);
-
+			
 			$columns = array(
 				'query' => array(
 					'title' => $lang['strsql'],
@@ -100,7 +100,7 @@
 			)
 		);
 
-		if (isset($_SESSION['history'][$_REQUEST['server']][$_REQUEST['database']])
+		if (isset($_SESSION['history'][$_REQUEST['server']][$_REQUEST['database']]) 
 				&& count($_SESSION['history'][$_REQUEST['server']][$_REQUEST['database']])) {
 			$navlinks['download'] = array (
 				'attr'=> array (
@@ -141,7 +141,7 @@
 
         		// Bring to the front always
 	        	echo "<body onload=\"window.focus();\">\n";
-
+			
 			echo "<h3>{$lang['strdelhistory']}</h3>\n";
 			echo "<p>{$lang['strconfdelhistory']}</p>\n";
 
@@ -156,7 +156,7 @@
 		}
 		else
 			unset($_SESSION['history'][$_REQUEST['server']][$_REQUEST['database']][$qid]);
-	}
+	}       
 
 	function doClearHistory($confirm) {
 		global $misc, $lang;
@@ -196,7 +196,7 @@
 
 		exit;
 	}
-
+	
 	switch ($action) {
 		case 'confdelhistory':
 			doDelHistory($_REQUEST['queryid'], true);
@@ -218,9 +218,9 @@
 		default:
 			doDefault();
 	}
-
+																					
 	// Set the name of the window
 	$misc->setWindowName('history');
 	$misc->printFooter();
-
+	
 ?>

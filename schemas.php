@@ -180,7 +180,7 @@
 	}
 
 	/**
-	 * Display a form to permit editing schema properies.
+	 * Display a form to permit editing schema properties.
 	 * TODO: permit changing owner
 	 */
 	function doAlter($msg = '') {
@@ -220,7 +220,7 @@
 					}
 					echo "</select></td></tr>\n";
 			}
-			else
+			else 
 				echo "<input name=\"owner\" value=\"{$_POST['owner']}\" type=\"hidden\" />";
 
 			echo "\t<tr>\n";
@@ -274,7 +274,7 @@
 			//If multi drop
 			if (isset($_REQUEST['ma'])) {
 				foreach($_REQUEST['ma'] as $v) {
-					$a = unserialize(htmlspecialchars_decode($v, ENT_QUOTES));
+					$a = safeUnserialize(htmlspecialchars_decode($v, ENT_QUOTES));
 					echo '<p>', sprintf($lang['strconfdropschema'], $misc->printVal($a['nsp'])), "</p>\n";
 					echo '<input type="hidden" name="nsp[]" value="', htmlspecialchars($a['nsp']), "\" />\n";
 				}
@@ -342,19 +342,21 @@
 		echo "<table>\n";
 		echo "<tr><th class=\"data\">{$lang['strformat']}</th><th class=\"data\" colspan=\"2\">{$lang['stroptions']}</th></tr>\n";
 		// Data only
-		echo "<tr><th class=\"data left\" rowspan=\"2\">";
+		echo "<tr><th class=\"data left\" rowspan=\"". ($data->hasServerOids() ? 2 : 1) ."\">";
 		echo "<input type=\"radio\" id=\"what1\" name=\"what\" value=\"dataonly\" checked=\"checked\" /><label for=\"what1\">{$lang['strdataonly']}</label></th>\n";
 		echo "<td>{$lang['strformat']}</td>\n";
 		echo "<td><select name=\"d_format\">\n";
 		echo "<option value=\"copy\">COPY</option>\n";
 		echo "<option value=\"sql\">SQL</option>\n";
 		echo "</select>\n</td>\n</tr>\n";
-		echo "<tr><td><label for=\"d_oids\">{$lang['stroids']}</label></td><td><input type=\"checkbox\" id=\"d_oids\" name=\"d_oids\" /></td>\n</tr>\n";
+		if ($data->hasServerOids()) {
+			echo "<tr><td><label for=\"d_oids\">{$lang['stroids']}</label></td><td><input type=\"checkbox\" id=\"d_oids\" name=\"d_oids\" /></td>\n</tr>\n";
+		}
 		// Structure only
 		echo "<tr><th class=\"data left\"><input type=\"radio\" id=\"what2\" name=\"what\" value=\"structureonly\" /><label for=\"what2\">{$lang['strstructureonly']}</label></th>\n";
 		echo "<td><label for=\"s_clean\">{$lang['strdrop']}</label></td><td><input type=\"checkbox\" id=\"s_clean\" name=\"s_clean\" /></td>\n</tr>\n";
 		// Structure and data
-		echo "<tr><th class=\"data left\" rowspan=\"3\">";
+		echo "<tr><th class=\"data left\" rowspan=\"". ($data->hasServerOids() ? 3 : 2) ."\">";
 		echo "<input type=\"radio\" id=\"what3\" name=\"what\" value=\"structureanddata\" /><label for=\"what3\">{$lang['strstructureanddata']}</label></th>\n";
 		echo "<td>{$lang['strformat']}</td>\n";
 		echo "<td><select name=\"sd_format\">\n";
@@ -362,7 +364,9 @@
 		echo "<option value=\"sql\">SQL</option>\n";
 		echo "</select>\n</td>\n</tr>\n";
 		echo "<tr><td><label for=\"sd_clean\">{$lang['strdrop']}</label></td><td><input type=\"checkbox\" id=\"sd_clean\" name=\"sd_clean\" /></td>\n</tr>\n";
-		echo "<tr><td><label for=\"sd_oids\">{$lang['stroids']}</label></td><td><input type=\"checkbox\" id=\"sd_oids\" name=\"sd_oids\" /></td>\n</tr>\n";
+		if ($data->hasServerOids()) {
+			echo "<tr><td><label for=\"sd_oids\">{$lang['stroids']}</label></td><td><input type=\"checkbox\" id=\"sd_oids\" name=\"sd_oids\" /></td>\n</tr>\n";
+		}
 		echo "</table>\n";
 
 		echo "<h3>{$lang['stroptions']}</h3>\n";
@@ -375,8 +379,8 @@
 		echo "</p>\n";
 		echo "<p><input type=\"hidden\" name=\"action\" value=\"export\" />\n";
 		echo "<input type=\"hidden\" name=\"subject\" value=\"schema\" />\n";
-        echo "<input type=\"hidden\" name=\"database\" value=\"", htmlspecialchars($_REQUEST['database']), "\" />\n";
-        echo "<input type=\"hidden\" name=\"schema\" value=\"", htmlspecialchars($_REQUEST['schema']), "\" />\n";
+		echo "<input type=\"hidden\" name=\"database\" value=\"", htmlspecialchars($_REQUEST['database']), "\" />\n";
+		echo "<input type=\"hidden\" name=\"schema\" value=\"", htmlspecialchars($_REQUEST['schema']), "\" />\n";
 		echo $misc->form;
 		echo "<input type=\"submit\" value=\"{$lang['strexport']}\" /></p>\n";
 		echo "</form>\n";
@@ -390,7 +394,7 @@
 	function doTree() {
 		global $misc, $data, $lang;
 
-		$schemas = $data->getSchemas(true);
+		$schemas = $data->getSchemas();
 
 		$reqvars = $misc->getRequestVars('schema');
 
@@ -398,20 +402,22 @@
 			'text'   => field('nspname'),
 			'icon'   => 'Schema',
 			'toolTip'=> field('nspcomment'),
-			'action' => url('redirect.php',
-							$reqvars,
-							array(
-								'subject' => 'schema',
-								'schema'  => field('nspname')
-							)
-						),
-			'branch' => url('schemas.php',
-							$reqvars,
-							array(
-								'action'  => 'subtree',
-								'schema'  => field('nspname')
-							)
-						),
+			'action' => url(
+				'redirect.php',
+				$reqvars,
+				array(
+					'subject' => 'schema',
+					'schema'  => field('nspname')
+				)
+			),
+			'branch' => url(
+				'schemas.php',
+				$reqvars,
+				array(
+					'action'  => 'subtree',
+					'schema'  => field('nspname')
+				)
+			),
 		);
 
 		$misc->printTree($schemas, $attrs, 'schemas');
@@ -431,15 +437,17 @@
 		$attrs = array(
 			'text'   => field('title'),
 			'icon'   => field('icon'),
-			'action' => url(field('url'),
-							$reqvars,
-							field('urlvars', array())
-						),
-			'branch' => url(field('url'),
-							$reqvars,
-							field('urlvars'),
-							array('action' => 'tree')
-						)
+			'action' => url(
+				field('url'),
+				$reqvars,
+				field('urlvars', array())
+			),
+			'branch' => url(
+				field('url'),
+				$reqvars,
+				field('urlvars'),
+				array('action' => 'tree')
+			)
 		);
 
 		$misc->printTree($items, $attrs, 'schema');
@@ -476,5 +484,3 @@
 	}
 
 	$misc->printFooter();
-
-?>

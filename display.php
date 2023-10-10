@@ -29,9 +29,9 @@
 		global $lang;
 
 		if (is_array($_REQUEST['key']))
-           $key = $_REQUEST['key'];
-        else
-           $key = unserialize(urldecode($_REQUEST['key']));
+			$key = $_REQUEST['key'];
+		else
+			$key = safeUnserialize(urldecode($_REQUEST['key']));
 
 		if ($confirm) {
 			$misc->printTrail($_REQUEST['subject']);
@@ -238,7 +238,7 @@
 			echo "</form>\n";
 		}
 		else {
-			$status = $data->deleteRow($_POST['table'], unserialize(urldecode($_POST['key'])));
+			$status = $data->deleteRow($_POST['table'], safeUnserialize(urldecode($_POST['key'])));
 			if ($status == 0)
 				doBrowse($lang['strrowdeleted']);
 			elseif ($status == -2)
@@ -283,6 +283,7 @@
 
 						$fkey_information['byfield'][$constr['p_field']][] = $constr['conid'];
 					}
+					elseif ($constr['contype'] == 'p') $fkey_information['pkey'] = $constr['p_field'];
 					$constraints->moveNext();
 				}
 			}
@@ -320,7 +321,7 @@
 
 				$sortLink = http_build_query($args);
 
-				echo "<th class=\"data\"><a href=\"?{$sortLink}\">"
+				echo "<th class=\"data\"><a href=\"display.php?{$sortLink}\">"
 					, $misc->printVal($finfo->name);
 				if($_REQUEST['sortkey'] == ($j + 1)) {
 					if($_REQUEST['sortdir'] == 'asc')
@@ -402,8 +403,8 @@
 		if (is_object($rs) && $rs->recordCount() > 0) {
 			/* we are browsing a referenced table here
 			 * we should show OID if show_oids is true
-			 * so we give true to withOid in functions bellow
-			 * as 3rd paramter */
+			 * so we give true to withOid in functions below
+			 * as 3rd parameter */
 
 			echo "<table><tr>";
 				printTableHeaderCells($rs, false, true);
@@ -494,14 +495,15 @@
 			}
 		}
 
+		$fkey_information =& getFKInfo();
+
 		// Retrieve page from query.  $max_pages is returned by reference.
 		$rs = $data->browseQuery($type,
 			isset($object) ? $object : null,
 			isset($_SESSION['sqlquery']) ? $_SESSION['sqlquery'] : null,
 			$_REQUEST['sortkey'], $_REQUEST['sortdir'], $_REQUEST['page'],
-			$conf['max_rows'], $max_pages);
-
-		$fkey_information =& getFKInfo();
+			$conf['max_rows'], $max_pages,
+			isset($fkey_information['pkey']) ? $fkey_information['pkey'] : null);
 
 		// Build strings for GETs in array
 		$_gets = array(
@@ -529,15 +531,15 @@
 		if (isset($_REQUEST['query'])) {
 			$query = $_REQUEST['query'];
 		} else {
-			$query = "SELECT * FROM {$_REQUEST['schema']}";
+			$query = "SELECT * FROM ".$data->escapeIdentifier($_REQUEST['schema']);
 			if ($_REQUEST['subject'] == 'view') {
-				$query = "{$query}.{$_REQUEST['view']};";
+				$query = "{$query}.".$data->escapeIdentifier($_REQUEST['view']).";";
 			} else {
-				$query = "{$query}.{$_REQUEST['table']};";
+				$query = "{$query}.".$data->escapeIdentifier($_REQUEST['table']).";";
 			}
 		}
 		//$query = isset($_REQUEST['query'])? $_REQUEST['query'] : "select * from {$_REQUEST['schema']}.{$_REQUEST['table']};";
-		echo $query;
+		echo htmlspecialchars($query);
 		echo '</textarea><br><input type="submit"/></form>';
 
 		if (is_object($rs) && $rs->recordCount() > 0) {
@@ -624,11 +626,23 @@
 					$keys_array = array();
 					$has_nulls = false;
 					foreach ($key as $v) {
+						$finfo = $rs->fieldTypesArray();
+
 						if ($rs->fields[$v] === null) {
 							$has_nulls = true;
 							break;
 						}
-						$keys_array["key[{$v}]"] = $rs->fields[$v];
+
+						foreach ($finfo as $field) {
+							if ($field->name === $v) {
+								if ($field->type === 'bytea') {
+									$keys_array["key[{$v}]"] = $data->conn->BlobEncode($rs->fields[$v]);
+								} else {
+									$keys_array["key[{$v}]"] = $rs->fields[$v];
+								}
+
+							}
+						}
 					}
 					if ($has_nulls) {
 						echo "<td colspan=\"{$colspan}\">&nbsp;</td>\n";
@@ -836,22 +850,20 @@
 				$lang['strtables'].': '.$_REQUEST[$_REQUEST['subject']],
 				$scripts
 			);
-		}
-		else if ($_REQUEST['subject'] == 'view') {
+		} else if ($_REQUEST['subject'] == 'view') {
 			$misc->printHeader(
 				$lang['strviews'].': '.$_REQUEST[$_REQUEST['subject']],
 				$scripts
 			);
+		} else if ($_REQUEST['subject'] == 'column') {
+			$misc->printHeader(
+				$lang['strcolumn'].': '.$_REQUEST[$_REQUEST['subject']],
+				$scripts
+			);
 		}
-        else if ($_REQUEST['subject'] == 'column') {
-            $misc->printHeader(
-                $lang['strcolumn'].': '.$_REQUEST[$_REQUEST['subject']],
-                $scripts
-            );
-        }
-	}
-	else
+	} else {
 		$misc->printHeader($lang['strqueryresults']);
+	}
 
 	$misc->printBody();
 
@@ -876,5 +888,3 @@
 	}
 
 	$misc->printFooter();
-
-?>

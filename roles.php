@@ -11,14 +11,14 @@
 
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
-
+	
 	/**
 	 * Displays a screen for create a new role
 	 */
 	function doCreate($msg = '') {
 		global $data, $misc, $username;
 		global $lang;
-
+		
 		if (!isset($_POST['formRolename'])) $_POST['formRolename'] = '';
 		if (!isset($_POST['formPassword'])) $_POST['formPassword'] = '';
 		if (!isset($_POST['formConfirm'])) $_POST['formConfirm'] = '';
@@ -27,7 +27,7 @@
 		if (!isset($_POST['memberof'])) $_POST['memberof'] = array();
 		if (!isset($_POST['members'])) $_POST['members'] = array();
 		if (!isset($_POST['adminmembers'])) $_POST['adminmembers'] = array();
-
+	
 		$misc->printTrail('role');
 		$misc->printTitle($lang['strcreaterole'],'pg.role.create');
 		$misc->printMsg($msg);
@@ -41,25 +41,25 @@
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strconfirm']}</th>\n";
 		echo "\t\t<td class=\"data1\"><input size=\"15\" type=\"password\" name=\"formConfirm\" value=\"", htmlspecialchars($_POST['formConfirm']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formSuper\">{$lang['strsuper']}</label></th>\n";
-		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"",
+		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"", 
 			(isset($_POST['formSuper'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCreateDB\">{$lang['strcreatedb']}</label></th>\n";
-		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"",
+		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"", 
 			(isset($_POST['formCreateDB'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCreateRole\">{$lang['strcancreaterole']}</label></th>\n";
-		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateRole\" name=\"formCreateRole\"",
+		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateRole\" name=\"formCreateRole\"", 
 			(isset($_POST['formCreateRole'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formInherits\">{$lang['strinheritsprivs']}</label></th>\n";
-		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formInherits\" name=\"formInherits\"",
+		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formInherits\" name=\"formInherits\"", 
 			(isset($_POST['formInherits'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCanLogin\">{$lang['strcanlogin']}</label></th>\n";
-		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCanLogin\" name=\"formCanLogin\"",
-			(isset($_POST['formCanLogin'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
+		echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCanLogin\" name=\"formCanLogin\"", 
+			(isset($_POST['formCanLogin'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";			
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strconnlimit']}</th>\n";
 		echo "\t\t<td class=\"data1\"><input size=\"4\" name=\"formConnLimit\" value=\"", htmlspecialchars($_POST['formConnLimit']), "\" /></td>\n\t</tr>\n";
 		echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strexpires']}</th>\n";
 		echo "\t\t<td class=\"data1\"><input size=\"23\" name=\"formExpires\" value=\"", htmlspecialchars($_POST['formExpires']), "\" /></td>\n\t</tr>\n";
-
+		
 		$roles = $data->getRoles();
 		if ($roles->recordCount() > 0) {
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strmemberof']}</th>\n";
@@ -73,7 +73,7 @@
 			}
 			echo "\t\t\t</select>\n";
 			echo "\t\t</td>\n\t</tr>\n";
-
+			
 			$roles->moveFirst();
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strmembers']}</th>\n";
 			echo "\t\t<td class=\"data\">\n";
@@ -100,7 +100,7 @@
 			echo "\t\t\t</select>\n";
 			echo "\t\t</td>\n\t</tr>\n";
 		}
-
+		
 		echo "</table>\n";
 		echo "<p><input type=\"hidden\" name=\"action\" value=\"save_create\" />\n";
 		echo $misc->form;
@@ -108,7 +108,7 @@
 		echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 		echo "</form>\n";
 	}
-
+	
 	/**
 	 * Actually creates the new role in the database
 	 */
@@ -118,15 +118,15 @@
 		if(!isset($_POST['memberof'])) $_POST['memberof'] = array();
 		if(!isset($_POST['members'])) $_POST['members'] = array();
 		if(!isset($_POST['adminmembers'])) $_POST['adminmembers'] = array();
-
+		
 		// Check data
 		if ($_POST['formRolename'] == '')
 			doCreate($lang['strroleneedsname']);
 		else if ($_POST['formPassword'] != $_POST['formConfirm'])
 			doCreate($lang['strpasswordconfirm']);
-		else {
-			$status = $data->createRole($_POST['formRolename'], $_POST['formPassword'], isset($_POST['formSuper']),
-				isset($_POST['formCreateDB']), isset($_POST['formCreateRole']), isset($_POST['formInherits']),
+		else {		
+			$status = $data->createRole($_POST['formRolename'], $_POST['formPassword'], isset($_POST['formSuper']), 
+				isset($_POST['formCreateDB']), isset($_POST['formCreateRole']), isset($_POST['formInherits']), 
 				isset($_POST['formCanLogin']), $_POST['formConnLimit'], $_POST['formExpires'], $_POST['memberof'], $_POST['members'],
 				$_POST['adminmembers']);
 			if ($status == 0)
@@ -134,7 +134,7 @@
 			else
 				doCreate($lang['strrolecreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * Function to allow alter a role
@@ -146,9 +146,9 @@
 		$misc->printTrail('role');
 		$misc->printTitle($lang['stralter'],'pg.role.alter');
 		$misc->printMsg($msg);
-
+				
 		$roledata = $data->getRole($_REQUEST['rolename']);
-
+		
 		if ($roledata->recordCount() > 0) {
 			$server_info = $misc->getServerInfo();
 			$canRename = $data->hasUserRename() && ($_REQUEST['rolename'] != $server_info['username']);
@@ -169,7 +169,7 @@
 				$_POST['formExpires'] = $roledata->fields['rolvaliduntil'] == 'infinity' ? '' : $roledata->fields['rolvaliduntil'];
 				$_POST['formPassword'] = '';
 			}
-
+		
 			echo "<form action=\"roles.php\" method=\"post\">\n";
 			echo "<table>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\" style=\"width: 130px\">{$lang['strname']}</th>\n";
@@ -179,19 +179,19 @@
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strconfirm']}</th>\n";
 			echo "\t\t<td class=\"data1\"><input type=\"password\" size=\"15\" name=\"formConfirm\" value=\"\" /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formSuper\">{$lang['strsuper']}</label></th>\n";
-			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"",
+			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formSuper\" name=\"formSuper\"", 
 				(isset($_POST['formSuper'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCreateDB\">{$lang['strcreatedb']}</label></th>\n";
-			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"",
+			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateDB\" name=\"formCreateDB\"", 
 				(isset($_POST['formCreateDB'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCreateRole\">{$lang['strcancreaterole']}</label></th>\n";
-			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateRole\" name=\"formCreateRole\"",
+			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCreateRole\" name=\"formCreateRole\"", 
 				(isset($_POST['formCreateRole'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formInherits\">{$lang['strinheritsprivs']}</label></th>\n";
-			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formInherits\" name=\"formInherits\"",
+			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formInherits\" name=\"formInherits\"", 
 				(isset($_POST['formInherits'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\"><label for=\"formCanLogin\">{$lang['strcanlogin']}</label></th>\n";
-			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCanLogin\" name=\"formCanLogin\"",
+			echo "\t\t<td class=\"data1\"><input type=\"checkbox\" id=\"formCanLogin\" name=\"formCanLogin\"", 
 				(isset($_POST['formCanLogin'])) ? ' checked="checked"' : '', " /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strconnlimit']}</th>\n";
 			echo "\t\t<td class=\"data1\"><input size=\"4\" name=\"formConnLimit\" value=\"", htmlspecialchars($_POST['formConnLimit']), "\" /></td>\n\t</tr>\n";
@@ -240,7 +240,7 @@
 					$_POST['adminmembers'] = array();
 				$adminmembersold = implode(',', $_POST['adminmembers']);
 			}
-
+			
 			$roles = $data->getRoles($_REQUEST['rolename']);
 			if ($roles->recordCount() > 0) {
 				echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strmemberof']}</th>\n";
@@ -254,7 +254,7 @@
 				}
 				echo "\t\t\t</select>\n";
 				echo "\t\t</td>\n\t</tr>\n";
-
+			
 				$roles->moveFirst();
 				echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strmembers']}</th>\n";
 				echo "\t\t<td class=\"data\">\n";
@@ -295,8 +295,8 @@
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
 	}
-
-	/**
+	
+	/** 
 	 * Function to save after editing a role
 	 */
 	function doSaveAlter() {
@@ -331,9 +331,9 @@
 		if ($confirm) {
 			$misc->printTrail('role');
 			$misc->printTitle($lang['strdroprole'],'pg.role.drop');
-
-			echo "<p>", sprintf($lang['strconfdroprole'], $misc->printVal($_REQUEST['rolename'])), "</p>\n";
-
+			
+			echo "<p>", sprintf($lang['strconfdroprole'], $misc->printVal($_REQUEST['rolename'])), "</p>\n";	
+			
 			echo "<form action=\"roles.php\" method=\"post\">\n";
 			echo "<p><input type=\"hidden\" name=\"action\" value=\"drop\" />\n";
 			echo "<input type=\"hidden\" name=\"rolename\" value=\"", htmlspecialchars($_REQUEST['rolename']), "\" />\n";
@@ -348,9 +348,9 @@
 				doDefault($lang['strroledropped']);
 			else
 				doDefault($lang['strroledroppedbad']);
-		}
+		}		
 	}
-
+	
 	/**
 	 * Show the properties of a role
 	 */
@@ -361,7 +361,7 @@
 		$misc->printTrail('role');
 		$misc->printTitle($lang['strproperties'],'pg.role');
 		$misc->printMsg($msg);
-
+			
 		$roledata = $data->getRole($_REQUEST['rolename']);
 		if($roledata->recordCount() > 0 ) {
 			$roledata->fields['rolsuper'] = $data->phpBool($roledata->fields['rolsuper']);
@@ -394,7 +394,7 @@
 			echo "\t<tr>\n\t\t<td class=\"data2\">{$lang['strmemberof']}</td>\n";
 			echo "\t\t<td class=\"data2\">";
 			$memberof = $data->getMemberOf($_REQUEST['rolename']);
-			if ($memberof->recordCount() > 0) {
+			if ($memberof->recordCount() > 0) {	
 				while (!$memberof->EOF) {
 					echo $misc->printVal($memberof->fields['rolname']), "<br />\n";
 					$memberof->moveNext();
@@ -477,12 +477,12 @@
 	function doAccount($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$server_info = $misc->getServerInfo();
-
+		
 		$roledata = $data->getRole($server_info['username']);
 		$_REQUEST['rolename'] = $server_info['username'];
-
+		
 		$misc->printTrail('role');
 		$misc->printTabs('server','account');
 		$misc->printMsg($msg);
@@ -513,7 +513,7 @@
 			echo "\t</tr>\n</table>\n";
 		}
 		else echo "<p>{$lang['strnodata']}</p>\n";
-
+		
 		$misc->printNavLinks(array ('changepassword' =>  array (
 				'attr'=> array (
 					'href' => array (
@@ -527,29 +527,29 @@
 				'content' => $lang['strchangepassword']
 			)), 'roles-account', get_defined_vars());
 	}
-
+	
 	/**
 	 * Show confirmation of change password and actually change password
 	 */
 	function doChangePassword($confirm, $msg = '') {
 		global $data, $misc;
 		global $lang, $conf;
-
+		
 		$server_info = $misc->getServerInfo();
-
+		
 		if ($confirm) {
 			$_REQUEST['rolename'] = $server_info['username'];
 			$misc->printTrail('role');
 			$misc->printTitle($lang['strchangepassword'],'pg.role.alter');
 			$misc->printMsg($msg);
-
+			
 			if (!isset($_POST['password'])) $_POST['password'] = '';
 			if (!isset($_POST['confirm'])) $_POST['confirm'] = '';
-
+			
 			echo "<form action=\"roles.php\" method=\"post\">\n";
 			echo "<table>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strpassword']}</th>\n";
-			echo "\t\t<td><input type=\"password\" name=\"password\" size=\"32\" value=\"",
+			echo "\t\t<td><input type=\"password\" name=\"password\" size=\"32\" value=\"", 
 				htmlspecialchars($_POST['password']), "\" /></td>\n\t</tr>\n";
 			echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strconfirm']}</th>\n";
 			echo "\t\t<td><input type=\"password\" name=\"confirm\" size=\"32\" value=\"\" /></td>\n\t</tr>\n";
@@ -574,7 +574,7 @@
 				else
 					doAccount($lang['strpasswordchangedbad']);
 			}
-		}
+		}		
 	}
 
 
@@ -584,23 +584,23 @@
 	function doDefault($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		function renderRoleConnLimit($val) {
 			global $lang;
 			return $val == '-1' ? $lang['strnolimit'] : htmlspecialchars($val);
  		}
-
+		
 		function renderRoleExpires($val) {
 			global $lang;
 			return $val == 'infinity' ? $lang['strnever'] : htmlspecialchars($val);
  		}
-
+		
 		$misc->printTrail('server');
 		$misc->printTabs('server','roles');
 		$misc->printMsg($msg);
-
+		
 		$roles = $data->getRoles();
-
+		
 		$columns = array(
 			'role' => array(
 				'title' => $lang['strrole'],
@@ -649,7 +649,7 @@
 				'title' => $lang['stractions'],
 			),
 		);
-
+		
 		$actions = array(
 			'alter' => array(
 				'content' => $lang['stralter'],
@@ -676,7 +676,7 @@
 				)
 			),
 		);
-
+		
 		$misc->printTable($roles, $columns, $actions, 'roles-roles', $lang['strnoroles']);
 
 		$navlinks = array (
@@ -726,7 +726,7 @@
 			break;
 		case 'confchangepassword':
 			doChangePassword(true);
-			break;
+			break;			
 		case 'changepassword':
 			if (isset($_REQUEST['ok'])) doChangePassword(false);
 			else doAccount();
@@ -736,7 +736,7 @@
 			break;
 		default:
 			doDefault();
-	}
+	}	
 
 	$misc->printFooter();
 

@@ -20,7 +20,6 @@ class ADODB_base {
 	 * Base constructor
 	 * @param &$conn The connection object
 	 */
-//	function ADODB_base(&$conn) {
 	function __construct(&$conn) {
 		$this->conn = $conn;
 	}
@@ -44,6 +43,16 @@ class ADODB_base {
 	}
 
 	/**
+	 * Escapes a string for use as an identifier
+	 * @param $str The string to escape
+	 * @return The escaped string
+	 */
+	function escapeIdentifier($str) {
+		return '`' . $str . '`';
+	}
+
+
+	/**
 	 * Cleans (escapes) an object name (eg. table, field)
 	 * @param $str The string to clean, by reference
 	 * @return The cleaned string
@@ -59,12 +68,7 @@ class ADODB_base {
 	 * @return The cleaned array
 	 */
 	function arrayClean(&$arr) {
-		reset($arr);
-//		while(list($k, $v) = each($arr)) {
-		foreach($arr as $k => $v) {
-			$arr[$k] = addslashes($v);
-		}
-		return $arr;
+		return $arr = array_map('addslashes', $arr);
 	}
 
 	/**
@@ -135,8 +139,6 @@ class ADODB_base {
 	function delete($table, $conditions, $schema = '') {
 		$this->fieldClean($table);
 
-		reset($conditions);
-
 		if (!empty($schema)) {
 			$this->fieldClean($schema);
 			$schema = "\"{$schema}\".";
@@ -144,15 +146,11 @@ class ADODB_base {
 
 		// Build clause
 		$sql = '';
-//		while(list($key, $value) = each($conditions)) {
 		foreach($conditions as $key => $value) {
 			$this->clean($key);
 			$this->clean($value);
-			if($sql) {
-				$sql .= " AND \"{$key}\"='{$value}'";
-			} else {
-				$sql = "DELETE FROM {$schema}\"{$table}\" WHERE \"{$key}\"='{$value}'";
-			}
+			if ($sql) $sql .= " AND \"{$key}\"='{$value}'";
+			else $sql = "DELETE FROM {$schema}\"{$table}\" WHERE \"{$key}\"='{$value}'";
 		}
 
 		// Check for failures
@@ -227,8 +225,6 @@ class ADODB_base {
 		$whereClause = '';
 
 		// Populate the syntax arrays
-		reset($vars);
-	//	while(list($key, $value) = each($vars)) {
 		foreach($vars as $key => $value) {
 			$this->fieldClean($key);
 			$this->clean($value);
@@ -236,16 +232,12 @@ class ADODB_base {
 			else $setClause = "UPDATE \"{$table}\" SET \"{$key}\"='{$value}'";
 		}
 
-		reset($nulls);
-	//	while(list(, $value) = each($nulls)) {
-		foreach ($nulls as $key => $value) {
+		foreach($nulls as $value) {
 			$this->fieldClean($value);
 			if ($setClause) $setClause .= ", \"{$value}\"=NULL";
 			else $setClause = "UPDATE \"{$table}\" SET \"{$value}\"=NULL";
 		}
 
-		reset($where);
-	//	while(list($key, $value) = each($where)) {
 		foreach($where as $key => $value) {
 			$this->fieldClean($key);
 			$this->clean($value);

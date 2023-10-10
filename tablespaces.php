@@ -18,30 +18,30 @@
 	function doAlter($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('tablespace');
 		$misc->printTitle($lang['stralter'],'pg.tablespace.alter');
 		$misc->printMsg($msg);
 
-		// Fetch tablespace info
+		// Fetch tablespace info		
 		$tablespace = $data->getTablespace($_REQUEST['tablespace']);
-		// Fetch all users
+		// Fetch all users		
 		$users = $data->getUsers();
-
+		
 		if ($tablespace->recordCount() > 0) {
-
+			
 			if (!isset($_POST['name'])) $_POST['name'] = $tablespace->fields['spcname'];
 			if (!isset($_POST['owner'])) $_POST['owner'] = $tablespace->fields['spcowner'];
 			if (!isset($_POST['comment'])) {
 				$_POST['comment'] = ($data->hasSharedComments()) ? $tablespace->fields['spccomment'] : '';
 			}
-
+			
 			echo "<form action=\"tablespaces.php\" method=\"post\">\n";
 			echo $misc->form;
 			echo "<table>\n";
 			echo "<tr><th class=\"data left required\">{$lang['strname']}</th>\n";
 			echo "<td class=\"data1\">";
-			echo "<input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"",
+			echo "<input name=\"name\" size=\"32\" maxlength=\"{$data->_maxNameLen}\" value=\"", 
 				htmlspecialchars($_POST['name']), "\" /></td></tr>\n";
 			echo "<tr><th class=\"data left required\">{$lang['strowner']}</th>\n";
 			echo "<td class=\"data1\"><select name=\"owner\">";
@@ -51,7 +51,7 @@
 					($uname == $_POST['owner']) ? ' selected="selected"' : '', ">", htmlspecialchars($uname), "</option>\n";
 				$users->moveNext();
 			}
-			echo "</select></td></tr>\n";
+			echo "</select></td></tr>\n"; 
 			if ($data->hasSharedComments()){
 				echo "<tr><th class=\"data left\">{$lang['strcomment']}</th>\n";
 				echo "<td class=\"data1\">";
@@ -68,7 +68,7 @@
 		else echo "<p>{$lang['strnodata']}</p>\n";
 	}
 
-	/**
+	/** 
 	 * Function to save after altering a tablespace
 	 */
 	function doSaveAlter() {
@@ -102,9 +102,9 @@
 		if ($confirm) {
 			$misc->printTrail('tablespace');
 			$misc->printTitle($lang['strdrop'],'pg.tablespace.drop');
-
-			echo "<p>", sprintf($lang['strconfdroptablespace'], $misc->printVal($_REQUEST['tablespace'])), "</p>\n";
-
+			
+			echo "<p>", sprintf($lang['strconfdroptablespace'], $misc->printVal($_REQUEST['tablespace'])), "</p>\n";	
+			
 			echo "<form action=\"tablespaces.php\" method=\"post\">\n";
 			echo $misc->form;
 			echo "<input type=\"hidden\" name=\"action\" value=\"drop\" />\n";
@@ -119,18 +119,18 @@
 				doDefault($lang['strtablespacedropped']);
 			else
 				doDefault($lang['strtablespacedroppedbad']);
-		}
+		}		
 	}
-
+	
 	/**
 	 * Displays a screen where they can enter a new tablespace
 	 */
 	function doCreate($msg = '') {
 		global $data, $misc, $spcname;
 		global $lang;
-
+		
 		$server_info = $misc->getServerInfo();
-
+		
 		if (!isset($_POST['formSpcname'])) $_POST['formSpcname'] = '';
 		if (!isset($_POST['formOwner'])) $_POST['formOwner'] = $server_info['username'];
 		if (!isset($_POST['formLoc'])) $_POST['formLoc'] = '';
@@ -138,7 +138,7 @@
 
 		// Fetch all users
 		$users = $data->getUsers();
-
+		
 		$misc->printTrail('server');
 		$misc->printTitle($lang['strcreatetablespace'],'pg.tablespace.create');
 		$misc->printMsg($msg);
@@ -156,13 +156,13 @@
 				($uname == $_POST['formOwner']) ? ' selected="selected"' : '', ">", htmlspecialchars($uname), "</option>\n";
 			$users->moveNext();
 		}
-		echo "\t\t</select></td>\n\t</tr>\n";
+		echo "\t\t</select></td>\n\t</tr>\n";				
 		echo "\t<tr>\n\t\t<th class=\"data left required\">{$lang['strlocation']}</th>\n";
 		echo "\t\t<td class=\"data1\"><input size=\"32\" name=\"formLoc\" value=\"", htmlspecialchars($_POST['formLoc']), "\" /></td>\n\t</tr>\n";
 		// Comments (if available)
 		if ($data->hasSharedComments()) {
 			echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strcomment']}</th>\n";
-			echo "\t\t<td><textarea name=\"formComment\" rows=\"3\" cols=\"32\">",
+			echo "\t\t<td><textarea name=\"formComment\" rows=\"3\" cols=\"32\">", 
 				htmlspecialchars($_POST['formComment']), "</textarea></td>\n\t</tr>\n";
 		}
 		echo "</table>\n";
@@ -171,7 +171,7 @@
 		echo "<input type=\"submit\" name=\"cancel\" value=\"{$lang['strcancel']}\" /></p>\n";
 		echo "</form>\n";
 	}
-
+	
 	/**
 	 * Actually creates the new tablespace in the cluster
 	 */
@@ -187,14 +187,14 @@
 		else {
 			// Default comment to blank if it isn't set
 			if (!isset($_POST['formComment'])) $_POST['formComment'] = null;
-
+		
 			$status = $data->createTablespace($_POST['formSpcname'], $_POST['formOwner'], $_POST['formLoc'], $_POST['formComment']);
 			if ($status == 0)
 				doDefault($lang['strtablespacecreated']);
 			else
 				doCreate($lang['strtablespacecreatedbad']);
 		}
-	}
+	}	
 
 	/**
 	 * Show default list of tablespaces in the cluster
@@ -202,11 +202,11 @@
 	function doDefault($msg = '') {
 		global $data, $misc;
 		global $lang;
-
+		
 		$misc->printTrail('server');
 		$misc->printTabs('server','tablespaces');
 		$misc->printMsg($msg);
-
+		
 		$tablespaces = $data->getTablespaces();
 
 		$columns = array(
@@ -235,7 +235,7 @@
 		}
 
 
-
+		
 		$actions = array(
 			'alter' => array(
 				'content' => $lang['stralter'],
@@ -274,9 +274,9 @@
 				)
 			)
 		);
-
+				
 		$misc->printTable($tablespaces, $columns, $actions, 'tablespaces-tablespaces', $lang['strnotablespaces']);
-
+		
 		$misc->printNavLinks(array ('create' => array (
 				'attr'=> array (
 					'href' => array (
@@ -299,7 +299,7 @@
 			if (isset($_REQUEST['cancel'])) doDefault();
 			else doSaveCreate();
 			break;
-		case 'create':
+		case 'create':			
 			doCreate();
 			break;
 		case 'drop':
@@ -319,7 +319,7 @@
 		default:
 			doDefault();
 			break;
-	}
+	}	
 
 	$misc->printFooter();
 

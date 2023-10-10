@@ -6,7 +6,7 @@
 	 * $Id: login.php,v 1.38 2007/09/04 19:39:48 ioguix Exp $
 	 */
 	global $conf, $plugin_manager;
-
+	
 	// This needs to be an include once to prevent lib.inc.php infinite recursive includes.
 	// Check to see if the configuration file exists, if not, explain
 	require_once('./libraries/lib.inc.php');
@@ -17,11 +17,11 @@
 	$misc->printHeader($lang['strlogin']);
 	$misc->printBody();
 	$misc->printTrail('root');
-
+	
 	$server_info = $misc->getServerInfo($_REQUEST['server']);
-
+	
 	$misc->printTitle(sprintf($lang['strlogintitle'], $server_info['desc']));
-
+	
 	if (isset($msg)) $misc->printMsg($msg);
 
 	$md5_server = md5($_REQUEST['server']);

@@ -5,9 +5,9 @@
  *
  */
 
-include_once('./classes/database/Postgres12.php');
+include_once('./classes/database/Postgres.php');
 
-class Postgres13 extends Postgres12 {
+class Postgres13 extends Postgres {
 
 	var $major_version = 13;
 
@@ -26,6 +26,8 @@ class Postgres13 extends Postgres12 {
 		return $this->help_page;
 	}
 
-}
 
+	// Capabilities
+
+}
 ?>

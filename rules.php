@@ -91,7 +91,7 @@
 		if ($confirm) {
 			$misc->printTrail($_REQUEST['subject']);
 			$misc->printTitle($lang['strdrop'],'pg.rule.drop');
-
+			
 			echo "<p>", sprintf($lang['strconfdroprule'], $misc->printVal($_REQUEST['rule']),
 				$misc->printVal($_REQUEST[$_REQUEST['reltype']])), "</p>\n";
 
@@ -202,7 +202,7 @@
 	}
 
 	if ($action == 'tree') doTree();
-
+	
 	// Different header if we're view rules or table rules
 	$misc->printHeader($_REQUEST[$_REQUEST['subject']] . ' - ' . $lang['strrules']);
 	$misc->printBody();
@@ -226,7 +226,7 @@
 			doDefault();
 			break;
 	}
-
+	
 	$misc->printFooter();
 
 ?>

@@ -37,7 +37,7 @@
 					for ($k = 0; $k < $num_fields; $k++) {
 						echo "<th class=\"data\">", $misc->printVal(pg_fieldname($rs, $k)), "</th>";
 					}
-
+		
 					$i = 0;
 					$row = pg_fetch_row($rs);
 					while ($row !== false) {
@@ -45,7 +45,7 @@
 						echo "<tr class=\"data{$id}\">\n";
 						foreach ($row as $k => $v) {
 							echo "<td style=\"white-space:nowrap;\">", $misc->printVal($v, pg_fieldtype($rs, $k), array('null' => true)), "</td>";
-						}
+						}							
 						echo "</tr>\n";
 						$row = pg_fetch_row($rs);
 						$i++;
@@ -85,7 +85,7 @@
 	else {
 		echo "could not find the query!!";
 	}
-
+	
 	// Pagination maybe set by a get link that has it as FALSE,
 	// if that's the case, unset the variable.
 
@@ -102,7 +102,7 @@
 		include('./display.php');
 		exit;
 	}
-
+	
 	$subject = isset($_REQUEST['subject'])? $_REQUEST['subject'] : '';
 	$misc->printHeader($lang['strqueryresults']);
 	$misc->printBody();
@@ -138,7 +138,7 @@
 				$misc->saveScriptHistory($_SESSION['sqlquery']);
 
 			// Now, depending on what happened do various things
-
+	
 			// First, if rows returned, then display the results
 			if ($rs->recordCount() > 0) {
 				echo "<table>\n<tr>";
@@ -146,15 +146,15 @@
 					$finfo = $rs->fetchField($k);
 					echo "<th class=\"data\">", $misc->printVal($finfo->name), "</th>";
 				}
-                                echo "</tr>\n";
-				$i = 0;
+                                echo "</tr>\n";	
+				$i = 0;		
 				while (!$rs->EOF) {
 					$id = (($i % 2) == 0 ? '1' : '2');
 					echo "<tr class=\"data{$id}\">\n";
 					foreach ($rs->fields as $k => $v) {
 						$finfo = $rs->fetchField($k);
 						echo "<td style=\"white-space:nowrap;\">", $misc->printVal($v, $finfo->type, array('null' => true)), "</td>";
-					}
+					}							
 					echo "</tr>\n";
 					$rs->moveNext();
 					$i++;
@@ -174,8 +174,8 @@
 	// May as well try to time the query
 	if ($start_time !== null) {
 		list($usec, $sec) = explode(' ', microtime());
-		$end_time = ((float)$usec + (float)$sec);
-		// Get duration in milliseconds, round to 3dp's
+		$end_time = ((float)$usec + (float)$sec);	
+		// Get duration in milliseconds, round to 3dp's	
 		$duration = number_format(($end_time - $start_time) * 1000, 3);
 	}
 	else $duration = null;
@@ -187,9 +187,9 @@
 	if ($duration !== null) {
 		echo "<p>", sprintf($lang['strruntime'], $duration), "</p>\n";
 	}
-
+	
 	echo "<p>{$lang['strsqlexecuted']}</p>\n";
-
+			
 	$navlinks = array();
 	$fields = array(
 		'server' => $_REQUEST['server'],
@@ -198,7 +198,7 @@
 
 	if(isset($_REQUEST['schema']))
 		$fields['schema'] = $_REQUEST['schema'];
-
+	
 	// Return
 	if (isset($_REQUEST['return'])) {
 		$urlvars = $misc->getSubjectParams($_REQUEST['return']);
@@ -213,7 +213,7 @@
 		);
 	}
 
-	// Edit
+	// Edit		
 	$navlinks['alter'] = array (
 		'attr'=> array (
 			'href' => array (
@@ -258,7 +258,6 @@
 	}
 
 	$misc->printNavLinks($navlinks, 'sql-form', get_defined_vars());
-
+	
 	$misc->printFooter();
-
 ?>
